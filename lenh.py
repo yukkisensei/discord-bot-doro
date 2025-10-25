@@ -456,14 +456,40 @@ def setup(bot_instance: commands.Bot) -> None:
             logging.error("Playback error at guild %s: %s", guild_id, error)
         await play_next(guild_id)
 
-    @bot.command(name="say", aliases=["speak"], help="doro says something for u | add -r <msg_id> to react to a message")
+    @bot.command(name="say", aliases=["speak"], help="doro says something | -r <msg_id> <emojis> to react | -reply <msg_id> <text> to reply")
     async def say(ctx: commands.Context, *, message: str) -> None:
         if ctx.author.id not in OWNER_IDS:
             await ctx.reply("owner only!", mention_author=False)
             return
         
-        # Check for reaction mode (-r <message_id> <reactions>)
         import re
+        
+        # Check for reply mode (-reply <message_id> <text>)
+        reply_match = re.match(r'^-reply\s+(\d+)\s+(.+)$', message, re.DOTALL)
+        if reply_match:
+            msg_id = int(reply_match.group(1))
+            reply_text = reply_match.group(2)
+            
+            try:
+                # Find message in current channel
+                target_msg = await ctx.channel.fetch_message(msg_id)
+                
+                # Reply to the message
+                await target_msg.reply(reply_text, mention_author=False)
+                
+                # Delete command message
+                try:
+                    await ctx.message.delete()
+                except discord.Forbidden:
+                    pass
+                    
+            except discord.NotFound:
+                await ctx.reply(f"message {msg_id} not found in this channel!", mention_author=False)
+            except Exception as e:
+                await ctx.reply(f"error: {e}", mention_author=False)
+            return
+        
+        # Check for reaction mode (-r <message_id> <reactions>)
         reaction_match = re.match(r'^-r\s+(\d+)\s+(.+)$', message)
         
         if reaction_match:
