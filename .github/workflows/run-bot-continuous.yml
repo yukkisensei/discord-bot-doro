@@ -1,5 +1,5 @@
-# Alternative workflow for continuous Doro bot operation with auto-restart
-name: Run Doro Bot (Continuous)
+# GitHub Actions workflow for running Doro bot
+name: Run Doro Bot
 
 on:
   workflow_dispatch:
@@ -29,6 +29,41 @@ jobs:
         attempt: [1]
     
     steps:
+      # Discord notification - Started
+      - name: Discord Webhook - Started
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        run: |
+          $payload = @{
+            embeds = @(
+              @{
+                title = "🚀 Bot Started"
+                description = "GitHub Actions is starting the bot"
+                color = 3447003
+                fields = @(
+                  @{
+                    name = "Repository"
+                    value = "${{ github.repository }}"
+                    inline = $true
+                  }
+                  @{
+                    name = "Duration"
+                    value = "${{ github.event.inputs.run_duration }} hours"
+                    inline = $true
+                  }
+                )
+                timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+              }
+            )
+          } | ConvertTo-Json -Depth 10
+          
+          try {
+            Invoke-RestMethod -Uri "${{ secrets.DISCORD_WEBHOOK_URL }}" -Method Post -Body $payload -ContentType "application/json"
+          } catch {
+            Write-Host "Webhook notification failed (not critical)"
+          }
+        shell: pwsh
+        continue-on-error: true
+      
       - name: Checkout code
         uses: actions/checkout@v4
       
@@ -64,7 +99,7 @@ jobs:
           "@ | Out-File -FilePath ".env" -Encoding utf8
         shell: pwsh
       
-      - name: Run Bot with Auto-Restart
+      - name: Run Bot
         run: |
           # Run for 358.5 minutes (stop 90s before timeout)
           $endTime = (Get-Date).AddMinutes(358.5)
@@ -114,6 +149,45 @@ jobs:
           
           Write-Host "Bot session completed successfully" -ForegroundColor Green
         shell: pwsh
+      
+      # Discord notification - Completed
+      - name: Discord Webhook - Completed
+        if: ${{ always() && secrets.DISCORD_WEBHOOK_URL != '' }}
+        run: |
+          $status = "${{ job.status }}"
+          $color = if ($status -eq "success") { 5763719 } else { 15548997 }
+          $title = if ($status -eq "success") { "✅ Bot Stopped" } else { "❌ Bot Failed" }
+          
+          $payload = @{
+            embeds = @(
+              @{
+                title = $title
+                description = "Bot session has ended"
+                color = $color
+                fields = @(
+                  @{
+                    name = "Status"
+                    value = $status
+                    inline = $true
+                  }
+                  @{
+                    name = "Repository"
+                    value = "${{ github.repository }}"
+                    inline = $true
+                  }
+                )
+                timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+              }
+            )
+          } | ConvertTo-Json -Depth 10
+          
+          try {
+            Invoke-RestMethod -Uri "${{ secrets.DISCORD_WEBHOOK_URL }}" -Method Post -Body $payload -ContentType "application/json"
+          } catch {
+            Write-Host "Webhook notification failed (not critical)"
+          }
+        shell: pwsh
+        continue-on-error: true
         
   # # DISABLED: Automatic workflow restart
   # # Uncomment this section if you want automatic restart
