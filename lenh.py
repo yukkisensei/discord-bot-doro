@@ -456,7 +456,7 @@ def setup(bot_instance: commands.Bot) -> None:
             logging.error("Playback error at guild %s: %s", guild_id, error)
         await play_next(guild_id)
 
-    @bot.command(name="say", aliases=["speak"], help="doro says something | -r <msg_id> <emojis> to react | -reply <msg_id> <text> to reply")
+    @bot.command(name="say", aliases=["speak"], help="doro says something | -r <msg_id> <emojis> = react | -re <msg_id> <text> = reply+ping | -rs <msg_id> <text> = reply silent")
     async def say(ctx: commands.Context, *, message: str) -> None:
         if ctx.author.id not in OWNER_IDS:
             await ctx.reply("owner only!", mention_author=False)
@@ -464,20 +464,37 @@ def setup(bot_instance: commands.Bot) -> None:
         
         import re
         
-        # Check for reply mode (-reply <message_id> <text>)
-        reply_match = re.match(r'^-reply\s+(\d+)\s+(.+)$', message, re.DOTALL)
-        if reply_match:
-            msg_id = int(reply_match.group(1))
-            reply_text = reply_match.group(2)
+        # Check for reply WITH ping mode (-re <message_id> <text>)
+        reply_ping_match = re.match(r'^-re\s+(\d+)\s+(.+)$', message, re.DOTALL)
+        if reply_ping_match:
+            msg_id = int(reply_ping_match.group(1))
+            reply_text = reply_ping_match.group(2)
             
             try:
-                # Find message in current channel
                 target_msg = await ctx.channel.fetch_message(msg_id)
+                await target_msg.reply(reply_text, mention_author=True)  # WITH ping
                 
-                # Reply to the message
-                await target_msg.reply(reply_text, mention_author=False)
+                try:
+                    await ctx.message.delete()
+                except discord.Forbidden:
+                    pass
+                    
+            except discord.NotFound:
+                await ctx.reply(f"message {msg_id} not found in this channel!", mention_author=False)
+            except Exception as e:
+                await ctx.reply(f"error: {e}", mention_author=False)
+            return
+        
+        # Check for reply WITHOUT ping mode (-rs <message_id> <text>)
+        reply_silent_match = re.match(r'^-rs\s+(\d+)\s+(.+)$', message, re.DOTALL)
+        if reply_silent_match:
+            msg_id = int(reply_silent_match.group(1))
+            reply_text = reply_silent_match.group(2)
+            
+            try:
+                target_msg = await ctx.channel.fetch_message(msg_id)
+                await target_msg.reply(reply_text, mention_author=False)  # NO ping
                 
-                # Delete command message
                 try:
                     await ctx.message.delete()
                 except discord.Forbidden:
