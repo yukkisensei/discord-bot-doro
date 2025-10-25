@@ -31,8 +31,13 @@ jobs:
     steps:
       # Discord notification - Started
       - name: Discord Webhook - Started
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         run: |
+          $webhookUrl = "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          if ([string]::IsNullOrWhiteSpace($webhookUrl)) {
+            Write-Host "No webhook URL configured, skipping notification"
+            exit 0
+          }
+          
           $payload = @{
             embeds = @(
               @{
@@ -57,9 +62,10 @@ jobs:
           } | ConvertTo-Json -Depth 10
           
           try {
-            Invoke-RestMethod -Uri "${{ secrets.DISCORD_WEBHOOK_URL }}" -Method Post -Body $payload -ContentType "application/json"
+            Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $payload -ContentType "application/json"
+            Write-Host "✅ Webhook notification sent"
           } catch {
-            Write-Host "Webhook notification failed (not critical)"
+            Write-Host "⚠️ Webhook notification failed: $_"
           }
         shell: pwsh
         continue-on-error: true
@@ -152,8 +158,14 @@ jobs:
       
       # Discord notification - Completed
       - name: Discord Webhook - Completed
-        if: ${{ always() && secrets.DISCORD_WEBHOOK_URL != '' }}
+        if: always()
         run: |
+          $webhookUrl = "${{ secrets.DISCORD_WEBHOOK_URL }}"
+          if ([string]::IsNullOrWhiteSpace($webhookUrl)) {
+            Write-Host "No webhook URL configured, skipping notification"
+            exit 0
+          }
+          
           $status = "${{ job.status }}"
           $color = if ($status -eq "success") { 5763719 } else { 15548997 }
           $title = if ($status -eq "success") { "✅ Bot Stopped" } else { "❌ Bot Failed" }
@@ -182,9 +194,10 @@ jobs:
           } | ConvertTo-Json -Depth 10
           
           try {
-            Invoke-RestMethod -Uri "${{ secrets.DISCORD_WEBHOOK_URL }}" -Method Post -Body $payload -ContentType "application/json"
+            Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $payload -ContentType "application/json"
+            Write-Host "✅ Webhook notification sent"
           } catch {
-            Write-Host "Webhook notification failed (not critical)"
+            Write-Host "⚠️ Webhook notification failed: $_"
           }
         shell: pwsh
         continue-on-error: true
