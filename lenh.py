@@ -623,13 +623,15 @@ def setup(bot_instance: commands.Bot) -> None:
     async def help_prefix(ctx: commands.Context, category: str = None) -> None:
         guild_id = str(ctx.guild.id) if ctx.guild else None
         current_prefix = prefix_system.get_prefix(guild_id) if guild_id else "!"
-        await ctx.reply(embed=build_help_embed(category, bot, current_prefix), mention_author=False)
+        is_owner = ctx.author.id in OWNER_IDS
+        await ctx.reply(embed=build_help_embed(category, bot, current_prefix, is_owner), mention_author=False)
 
     @bot.tree.command(name="help", description="view doro's command list")
     async def help_slash(interaction: discord.Interaction) -> None:
         guild_id = str(interaction.guild_id) if interaction.guild_id else None
         current_prefix = prefix_system.get_prefix(guild_id) if guild_id else "!"
-        await interaction.response.send_message(embed=build_help_embed(None, bot, current_prefix), ephemeral=True)
+        is_owner = interaction.user.id in OWNER_IDS
+        await interaction.response.send_message(embed=build_help_embed(None, bot, current_prefix, is_owner), ephemeral=True)
 
     @bot.command(name="play", aliases=["p"], help="play music or add to queue")
     async def play(ctx: commands.Context, *, query: str) -> None:

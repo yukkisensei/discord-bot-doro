@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-def build_help_embed(category: str = None, bot=None, prefix: str = "!") -> discord.Embed:
+def build_help_embed(category: str = None, bot=None, prefix: str = "!", is_owner: bool = False) -> discord.Embed:
     """Build help embed with category support"""
     
     categories = {
@@ -105,10 +105,33 @@ def build_help_embed(category: str = None, bot=None, prefix: str = "!") -> disco
                 f"`{prefix}checkmute [@user]` – check mute status",
                 f"`{prefix}mutelist` – list all muted users"
             ]
+        },
+        "owner": {
+            "title": "👑 Owner Commands",
+            "description": "owner-only commands",
+            "commands": [
+                f"`{prefix}say [text]` – send message as bot",
+                f"`{prefix}say -r <msg_id> <emojis>` – react to message",
+                f"`{prefix}say -re <msg_id> <text>` – reply with ping",
+                f"`{prefix}say -rs <msg_id> <text>` – reply without ping",
+                f"`{prefix}sync` – sync slash commands",
+                f"`{prefix}model [name]` – view/change AI model",
+                f"`{prefix}setlevel @user <level>` – set user level",
+                f"`{prefix}setinfinity @user` – toggle infinity mode"
+            ]
         }
     }
     
     if category and category.lower() in categories:
+        # Prevent non-owners from viewing owner category
+        if category.lower() == "owner" and not is_owner:
+            embed = discord.Embed(
+                title="❌ Access Denied",
+                description="This category is only available to bot owners.",
+                color=discord.Color.red()
+            )
+            return embed
+        
         cat_data = categories[category.lower()]
         embed = discord.Embed(
             title=cat_data["title"],
@@ -132,19 +155,25 @@ def build_help_embed(category: str = None, bot=None, prefix: str = "!") -> disco
         )
         embed.set_author(name="Doro Bot", icon_url="https://i.imgur.com/UFyXMeo.png")
         
+        categories_text = (
+            f"`{prefix}help music` - 🎶 music commands\n"
+            f"`{prefix}help economy` - 💰 economy commands\n"
+            f"`{prefix}help casino` - 🎰 casino commands\n"
+            f"`{prefix}help shop` - 🏪 shop commands\n"
+            f"`{prefix}help marriage` - 💍 marriage commands\n"
+            f"`{prefix}help ai` - 🤖 AI commands\n"
+            f"`{prefix}help fun` - 🎮 fun commands\n"
+            f"`{prefix}help utility` - ⚙️ utility commands\n"
+            f"`{prefix}help moderation` - 🛡️ moderation commands"
+        )
+        
+        # Add owner category only for owners
+        if is_owner:
+            categories_text += f"\n`{prefix}help owner` - 👑 owner commands"
+        
         embed.add_field(
             name="📚 Categories",
-            value=(
-                f"`{prefix}help music` - 🎶 music commands\n"
-                f"`{prefix}help economy` - 💰 economy commands\n"
-                f"`{prefix}help casino` - 🎰 casino commands\n"
-                f"`{prefix}help shop` - 🏪 shop commands\n"
-                f"`{prefix}help marriage` - 💍 marriage commands\n"
-                f"`{prefix}help ai` - 🤖 AI commands\n"
-                f"`{prefix}help fun` - 🎮 fun commands\n"
-                f"`{prefix}help utility` - ⚙️ utility commands\n"
-                f"`{prefix}help moderation` - 🛡️ moderation commands"
-            ),
+            value=categories_text,
             inline=False
         )
         
