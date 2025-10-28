@@ -2962,42 +2962,31 @@ def setup(bot_instance: commands.Bot) -> None:
 
         user_id = str(message.author.id)
         
-        # Word chain game logic (check BEFORE other processing)
+        # Word chain game logic - FAST CHECK with cache
         if message.guild:
             channel_id = str(message.channel.id)
+            # Quick cache check - skip if not enabled (FAST!)
             if word_chain_system.is_auto_channel(channel_id):
-                # Extract word from message (first word only, remove mentions/commands)
                 content = message.content.strip()
                 
-                # Skip if it's a command
-                guild_id = str(message.guild.id) if message.guild else None
-                current_prefix = prefix_system.get_prefix(guild_id) if guild_id else "!"
-                if content.startswith(current_prefix) or content.startswith('!') or content.startswith('+'):
-                    pass  # Skip commands
+                # FAST skip: commands
+                if not content or content[0] in ('!', '+', '/', '.', '-'):
+                    pass
                 else:
-                    # Get first word (split by spaces)
-                    words = content.split()
-                    if words:
-                        word = words[0].strip()
-                        # Remove punctuation from end
-                        import string
-                        word = word.rstrip(string.punctuation)
+                    # Get first word only (no complex processing)
+                    word = content.split()[0] if content else ""
+                    if len(word) >= 2:  # Min length check
+                        # Remove common punctuation
+                        word = word.rstrip('.,!?;:')
                         
-                        # Try to add word to chain
+                        # Try to add word
                         success, reason = word_chain_system.add_word(channel_id, user_id, word)
                         
-                        if success:
-                            # Valid word - react with green check
-                            try:
-                                await message.add_reaction("✅")
-                            except:
-                                pass
-                        else:
-                            # Invalid word - react with red X
-                            try:
-                                await message.add_reaction("❌")
-                            except:
-                                pass
+                        # React (non-blocking)
+                        try:
+                            await message.add_reaction("✅" if success else "❌")
+                        except:
+                            pass
         
         # XP system - gain XP from chatting (with cooldown)
         import time

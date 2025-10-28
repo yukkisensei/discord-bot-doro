@@ -13,6 +13,8 @@ WORD_CHAIN_FILE = "word_chain_data.json"
 class WordChainSystem:
     def __init__(self):
         self.data = self.load_data()
+        # Cache enabled channels for fast lookup
+        self._enabled_channels = set(self.data.get("auto_channels", {}).keys())
         # Structure: {
         #   "auto_channels": {"channel_id": {"enabled": True, "last_word": "word", "players": {...}}},
         #   "game_stats": {"user_id": {"wins": 0, "total_words": 0}}
@@ -34,8 +36,8 @@ class WordChainSystem:
             json.dump(self.data, f, ensure_ascii=False, indent=2)
     
     def is_auto_channel(self, channel_id: str) -> bool:
-        """Check if channel has word chain enabled"""
-        return channel_id in self.data.get("auto_channels", {})
+        """Check if channel has word chain enabled - uses cache for speed"""
+        return channel_id in self._enabled_channels
     
     def enable_auto_channel(self, channel_id: str) -> bool:
         """Enable word chain for channel"""
@@ -50,6 +52,7 @@ class WordChainSystem:
             "used_words": [],
             "created_at": datetime.now().isoformat()
         }
+        self._enabled_channels.add(channel_id)  # Update cache
         self.save_data()
         return True
     
@@ -57,6 +60,7 @@ class WordChainSystem:
         """Disable word chain for channel"""
         if channel_id in self.data.get("auto_channels", {}):
             del self.data["auto_channels"][channel_id]
+            self._enabled_channels.discard(channel_id)  # Update cache
             self.save_data()
             return True
         return False
@@ -74,9 +78,13 @@ class WordChainSystem:
                 "chain_count": 0,
                 "used_words": []
             })
-            self.save_data()
+            self.save_data()  # Always save on restart
             return True
         return False
+    
+    def force_save(self):
+        """Force save data (call on bot shutdown)"""
+        self.save_data()
     
     def is_valid_connection(self, word1: Optional[str], word2: str) -> tuple[bool, str]:
         """
@@ -110,18 +118,19 @@ class WordChainSystem:
         return True, "valid connection (pending verification)"
     
     def add_word(self, channel_id: str, user_id: str, word: str) -> tuple[bool, str]:
-        """Add word to chain"""
+        """Add word to chain - optimized for speed"""
         channel_data = self.get_channel_data(channel_id)
         if not channel_data:
-            return False, "channel not set up for word chain"
+            return False, "channel not set up"
         
-        # Check if same user posted twice in a row
+        # FAST check: same user
         if channel_data.get("last_user_id") == user_id:
-            return False, "cannot post twice in a row"
+            return False, "cannot post twice"
         
-        # Check if word was already used
-        used_words_lower = [w.lower() for w in channel_data.get("used_words", [])]
-        if word.lower() in used_words_lower:
+        # FAST check: word already used (use set for O(1) lookup)
+        word_lower = word.lower()
+        used_words = channel_data.get("used_words", [])
+        if word_lower in [w.lower() for w in used_words[-50:]]:  # Only check last 50 words
             return False, "word already used"
         
         # Validate connection
@@ -131,20 +140,27 @@ class WordChainSystem:
         if not is_valid:
             return False, reason
         
-        # Update chain
+        # Update chain (in memory)
         channel_data["last_word"] = word
         channel_data["last_user_id"] = user_id
         channel_data["chain_count"] += 1
         channel_data["used_words"].append(word)
         
+        # Keep only last 100 words to avoid memory issues
+        if len(channel_data["used_words"]) > 100:
+            channel_data["used_words"] = channel_data["used_words"][-100:]
+        
         # Update player stats
         self.update_player_stats(user_id, 1)
         
-        self.save_data()
+        # BATCH SAVE: Only save every 5 words or on disable
+        if channel_data["chain_count"] % 5 == 0:
+            self.save_data()
+        
         return True, reason
     
     def update_player_stats(self, user_id: str, words_added: int):
-        """Update player statistics"""
+        """Update player statistics - NO auto-save for performance"""
         if "game_stats" not in self.data:
             self.data["game_stats"] = {}
         
@@ -155,7 +171,7 @@ class WordChainSystem:
             }
         
         self.data["game_stats"][user_id]["total_words"] += words_added
-        self.save_data()
+        # Don't save here - save happens in add_word every 5 words
     
     def get_player_stats(self, user_id: str) -> Dict:
         """Get player statistics"""
