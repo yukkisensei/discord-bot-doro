@@ -156,6 +156,40 @@ jobs:
           Write-Host "Bot session completed successfully" -ForegroundColor Green
         shell: pwsh
       
+      # Auto-save user data to GitHub
+      - name: Save User Data
+        if: always()
+        run: |
+          Write-Host "💾 Saving user data to GitHub..." -ForegroundColor Cyan
+          
+          git config user.name "yukkisensei"
+          git config user.email "nht3m7trator@icloud.com"
+          
+          # Add all data files
+          git add economy_data.json
+          git add marriage_data.json
+          git add word_chain_data.json
+          git add shop_data.json
+          git add user_histories/
+          git add afk_data.json
+          git add disabled_commands.json
+          git add user_inventory.json
+          git add prefix_data.json
+          git add mute_data.json
+          
+          # Check if there are changes to commit
+          $changes = git diff --staged --quiet
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "📝 Changes detected, committing..." -ForegroundColor Yellow
+            git commit -m "Auto-save: user data from workflow run $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+            git push origin main
+            Write-Host "✅ User data saved successfully!" -ForegroundColor Green
+          } else {
+            Write-Host "ℹ️ No changes to save" -ForegroundColor Gray
+          }
+        shell: pwsh
+        continue-on-error: true
+      
       # Discord notification - Completed
       - name: Discord Webhook - Completed
         if: always()

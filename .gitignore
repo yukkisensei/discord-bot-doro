@@ -14,11 +14,8 @@ env/
 ENV/
 .venv
 
-# Data files - COMMIT THESE to preserve data between GitHub Actions runs
-# economy_data.json
-# afk_data.json
-# disabled_commands.json
-# user_histories/
+# Data files - MUST BE COMMITTED to preserve data between GitHub Actions runs
+# These are NOT ignored - they will be auto-saved by workflow
 
 # IDE
 .vscode/
