@@ -81,6 +81,30 @@ def build_help_embed(category: str = None, bot=None, prefix: str = "!", is_owner
                 f"`{prefix}8ball [question]` – magic 8ball"
             ]
         },
+        "wordchain": {
+            "title": "🔗 Word Chain Game",
+            "description": "creative word connection game (any language!)",
+            "commands": [
+                f"`{prefix}wordchain` – view game info & status",
+                f"`{prefix}wordchain enable` – enable in channel (admin)",
+                f"`{prefix}wordchain disable` – disable in channel (admin)",
+                f"`{prefix}wordchain restart` – restart chain",
+                f"`{prefix}wordchain rules` – view game rules",
+                f"`{prefix}wordchain stats` – your stats",
+                f"`{prefix}wordchain leaderboard` – top players",
+                "",
+                "**How to play:**",
+                "• Just type words in enabled channel!",
+                "• Bot reacts ✅ (valid) or ❌ (invalid)",
+                "• Connect via last letters OR meaning",
+                "• English, Vietnamese, any language OK!",
+                "",
+                "**Examples:**",
+                "• sky → heaven (meaning) ✅",
+                "• thiên → thiên hà (Vietnamese) ✅",
+                "• galaxy → universe (related) ✅"
+            ]
+        },
         "utility": {
             "title": "⚙️ Utility Commands",
             "description": "utility & info",
@@ -161,6 +185,7 @@ def build_help_embed(category: str = None, bot=None, prefix: str = "!", is_owner
             f"`{prefix}help casino` - 🎰 casino commands\n"
             f"`{prefix}help shop` - 🏪 shop commands\n"
             f"`{prefix}help marriage` - 💍 marriage commands\n"
+            f"`{prefix}help wordchain` - 🔗 word chain game\n"
             f"`{prefix}help ai` - 🤖 AI commands\n"
             f"`{prefix}help fun` - 🎮 fun commands\n"
             f"`{prefix}help utility` - ⚙️ utility commands\n"
@@ -184,6 +209,7 @@ def build_help_embed(category: str = None, bot=None, prefix: str = "!", is_owner
                 "• 💰 economy system with daily rewards\n"
                 "• 🎰 full casino games\n"
                 "• 💍 marriage system\n"
+                "• 🔗 word chain game (multi-language!)\n"
                 "• 🤖 smart AI chat\n"
                 "• 🎨 beautiful profile cards"
             ),
