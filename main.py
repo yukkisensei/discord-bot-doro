@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 import lenh
 import ai
 from prefix_system import prefix_system
+from word_chain import word_chain_system
 
 # Read .env file
 load_dotenv()
@@ -69,6 +70,14 @@ async def on_ready():
     
     print(f"✅ Logged in as {bot.user}")
     print(f"🌸 Active in {len(bot.guilds)} servers")
+    
+    # Show word chain status
+    wc_channels = len(word_chain_system._enabled_channels)
+    if wc_channels > 0:
+        print(f"🔗 Word chain active in {wc_channels} channel(s)")
+        print(f"💨 Other channels: FAST (no word chain scanning)")
+    else:
+        print(f"🔗 Word chain: DISABLED (all channels fast)")
     
     # Sync slash commands
     try:

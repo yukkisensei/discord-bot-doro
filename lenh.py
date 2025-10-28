@@ -2754,7 +2754,13 @@ def setup(bot_instance: commands.Bot) -> None:
                 return await ctx.reply("word chain already enabled in this channel!", mention_author=False)
             
             word_chain_system.enable_auto_channel(channel_id)
-            await ctx.reply(f"✅ word chain enabled! start playing by typing any word. use `{prefix}wordchain rules` to see rules", mention_author=False)
+            await ctx.reply(
+                f"✅ word chain enabled in **this channel only**!\n"
+                f"📌 bot will ONLY scan messages in this channel\n"
+                f"💨 other channels remain fast & unaffected\n"
+                f"ℹ️ use `{prefix}wordchain rules` for game rules",
+                mention_author=False
+            )
         
         # Disable word chain
         elif action == "disable":
@@ -2962,27 +2968,19 @@ def setup(bot_instance: commands.Bot) -> None:
 
         user_id = str(message.author.id)
         
-        # Word chain game logic - FAST CHECK with cache
+        # Word chain - ONLY check if channel is in cache (ULTRA FAST!)
+        # Skip entirely for non-word-chain channels
         if message.guild:
             channel_id = str(message.channel.id)
-            # Quick cache check - skip if not enabled (FAST!)
-            if word_chain_system.is_auto_channel(channel_id):
-                content = message.content.strip()
-                
-                # FAST skip: commands
-                if not content or content[0] in ('!', '+', '/', '.', '-'):
-                    pass
-                else:
-                    # Get first word only (no complex processing)
+            # Direct set lookup - O(1) operation, SUPER FAST
+            if channel_id in word_chain_system._enabled_channels:
+                content = message.content
+                # Skip commands instantly
+                if content and content[0] not in ('!', '+', '/', '.', '-', '@'):
                     word = content.split()[0] if content else ""
-                    if len(word) >= 2:  # Min length check
-                        # Remove common punctuation
+                    if len(word) >= 2:
                         word = word.rstrip('.,!?;:')
-                        
-                        # Try to add word
-                        success, reason = word_chain_system.add_word(channel_id, user_id, word)
-                        
-                        # React (non-blocking)
+                        success, _ = word_chain_system.add_word(channel_id, user_id, word)
                         try:
                             await message.add_reaction("✅" if success else "❌")
                         except:
