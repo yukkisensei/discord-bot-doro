@@ -232,6 +232,13 @@ Tùy chỉnh tính cách Doro trong `systems/aiSystem.js`:
 - Sử dụng emoji
 - Hành vi chủ sở hữu vs người dùng thông thường
 
+### Ảnh Activity Honkai
+Để status Discord có ảnh Honkai: Star Rail, hãy upload ảnh vào **Discord Developer Portal → ứng dụng của bạn → Rich Presence → Art Assets** và ghi nhớ tên asset (ví dụ `honkai_logo`). Sau đó thêm vào `.env`:
+```env
+HONKAI_ASSET_KEY=honkai_logo
+```
+Nếu không cấu hình, bot vẫn chạy nhưng Discord sẽ không hiển thị ảnh.
+
 ## 🎨 Điểm Nổi Bật Tính Năng
 
 ### Thẻ Hồ Sơ Đẹp

@@ -237,6 +237,13 @@ Customize Doro's personality in `systems/aiSystem.js`:
 - Emoji usage
 - Owner vs regular user behavior
 
+### Honkai Presence Asset
+To display the Honkai: Star Rail image inside Discord’s activity card, upload the image to **Discord Developer Portal → Your Application → Rich Presence → Art Assets** and copy the asset key (for example `honkai_logo`). Then set it in `.env`:
+```env
+HONKAI_ASSET_KEY=honkai_logo
+```
+If you skip this step the bot still runs, but Discord can’t show the artwork.
+
 ## 🎨 Features Highlights
 
 ### Beautiful Profile Cards

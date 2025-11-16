@@ -45,7 +45,7 @@ jobs:
           MAX_SECONDS=$((6 * 60 * 60))
           SAFETY_SECONDS=20
           RUNTIME_LIMIT=$((MAX_SECONDS - SAFETY_SECONDS))
-          DISPATCH_THRESHOLD=$((6 * 60 * 60 - 20)) # 6h - 20s
+          DISPATCH_DELAY=$((6 * 60 * 60 + 20)) # 6h + 20s
           echo "Bot will run for up to ${RUNTIME_LIMIT}s (~6h minus safety ${SAFETY_SECONDS}s)."
           
           while true; do
@@ -106,13 +106,21 @@ jobs:
           ELAPSED=$((NOW - START_TS))
           echo "Total elapsed runtime: ${ELAPSED}s."
           
-          if [ $ELAPSED -ge $DISPATCH_THRESHOLD ]; then
-            echo "Triggering next workflow run (elapsed ≥ ${DISPATCH_THRESHOLD}s)."
+          if [ $ELAPSED -lt $DISPATCH_DELAY ]; then
+            WAIT_SECONDS=$((DISPATCH_DELAY - ELAPSED))
+            if [ $WAIT_SECONDS -gt 0 ]; then
+              echo "Waiting ${WAIT_SECONDS}s so the next run starts 6h20s after this one..."
+              sleep $WAIT_SECONDS
+            fi
+          fi
+
+          if [ -z "${REPO_TOKEN}" ]; then
+            echo "REPO_TOKEN not provided; cannot trigger next run automatically."
+          else
+            echo "Triggering next workflow run."
             curl -X POST \
               -H "Authorization: token ${REPO_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/bot.yml/dispatches" \
               -d '{"ref":"main"}'
-          else
-            echo "Skipping workflow dispatch (elapsed=${ELAPSED}s)."
           fi
