@@ -9,6 +9,7 @@ import path from 'path';
 const HISTORIES_DIR = 'user_histories';
 const BLOCKED_USERS = [];
 const processedMessageIds = new Set();
+const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
 
 export class AISystem {
     constructor() {
@@ -252,6 +253,11 @@ You: Cringe.=)`;
 
         // Only respond when mentioned in guilds
         if (message.guild && !message.mentions.has(bot.user.id)) {
+            return;
+        }
+
+        // Ignore mass mentions
+        if (MASS_MENTION_REGEX.test(message.content || '')) {
             return;
         }
 
