@@ -15,11 +15,26 @@ export class AISystem {
         this.ownerIds = [];
         this.currentModel = 'meta/llama-3.1-8b-instruct';
         this.visionModel = 'meta/llama-3.2-11b-vision-instruct';
+        this.initialized = false;
+        this.client = null;
         
         // Ensure histories directory exists
         if (!existsSync(HISTORIES_DIR)) {
             mkdirSync(HISTORIES_DIR, { recursive: true });
         }
+    }
+
+    async init(client) {
+        if (this.initialized || !client) {
+            return;
+        }
+        this.client = client;
+        client.on('messageCreate', (message) => {
+            this.handleMessage(client, message).catch((err) => {
+                console.error('AI handler error:', err);
+            });
+        });
+        this.initialized = true;
     }
 
     buildSystemPrompt(isOwner, language = 'en') {

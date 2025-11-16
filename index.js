@@ -27,7 +27,7 @@ economy.ownerIds = OWNER_IDS;
 aiSystem.ownerIds = OWNER_IDS;
 marriageSystem.ownerIds = OWNER_IDS;
 
-async function initSystems() {
+async function initSystems(client) {
   await Promise.all([
     prefixSystem.init(),
     economy.init(),
@@ -38,7 +38,7 @@ async function initSystems() {
     disableSystem.init(),
     muteSystem.init(),
     wordChainSystem.init(),
-    aiSystem.init()
+    aiSystem.init(client)
   ]);
 }
 
@@ -206,7 +206,7 @@ client.on('interactionCreate', async (interaction) => {
       process.exit(1);
     }
 
-    await initSystems();
+    await initSystems(client);
     setupCommands(client, OWNER_IDS);
 
     await client.login(process.env.DISCORD_BOT_TOKEN);
