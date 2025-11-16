@@ -1,7 +1,7 @@
 /**
  * Mute System - Manage muted users with time tracking
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const MUTE_FILE = 'mute_data.json';
 

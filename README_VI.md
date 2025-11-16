@@ -1,10 +1,10 @@
-# Doro Discord Bot 🌸 V3.9 (Phiên Bản Node.js)
+# Doro Discord Bot 🌸 V4.1 (Phiên Bản Node.js)
 
 Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế, casino, kết hôn, trò chuyện AI và nối từ! Hiện được vận hành bởi Node.js với hỗ trợ đa ngôn ngữ!
 
 > 🇻🇳 **Tiếng Việt** (hiện tại) | 🇺🇸 **[English](README.md)**
 
-**Phiên Bản:** V3.9 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
+**Phiên Bản:** V4.1 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
 
 ## ✨ Tính Năng Chính
 
@@ -77,13 +77,14 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - Xử lý tin nhắn được tối ưu
 - Quản lý bộ nhớ tự động
 
-## 🆕 Có Gì Mới Trong V3.9
+## 🆕 Có Gì Mới Trong V4.1
 
-- 🐛 **Dependency Fixed** - Đã sửa vấn đề tương thích plugin SoundCloud
-- ⚡ **Chỉ dùng GitHub Actions** - Bot giờ chạy độc quyền trên GitHub Actions để ổn định hơn
-- 🔧 **Tối Ưu Hiệu Suất** - Tiếp tục giảm độ trễ và cải thiện thời gian phản hồi
+- 🔕 **Chặn Ping** - Bot bỏ qua tin nhắn chứa `@everyone` / `@here` và toàn bộ output (kể cả `!say`) được làm sạch nên không ping cả server.
+- 🎧 **Sửa Khởi Tạo Nhạc** - DisTube được khởi tạo cùng Discord client nên nhạc chạy ổn định trên các máy hỗ trợ voice (máy thật/VPS).
+- ⚙️ **GitHub Actions Runner** - Thêm `.github/workflows/bot.yml` để lint mỗi lần push và có thể chạy bot trực tiếp từ Actions bằng secrets của repo.
+- 🚀 **Tối Ưu Độ Trễ** - Bộ phân tích tin nhắn gọn hơn cùng lệnh `npm run lint` mới giúp giữ latency và API ping ở mức thấp nhất.
 
-## Cập Nhật Trước Đó (V3.8)
+## Cập Nhật Trước Đó (V4.1)
 
 - 🎵 **Hệ Thống Nhạc Hoàn Chỉnh** - Phát YouTube với queue, skip, pause, resume
 - ⚡ **Đã Sửa Latency** - Khôi phục cài đặt tối ưu, API latency về 20-50ms
@@ -91,19 +92,19 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - 📊 **Quản Lý Hàng Đợi** - Xem queue, đang phát, tự động phát tiếp
 - 🔧 **Tối Ưu Cân Bằng** - Cân bằng hoàn hảo giữa hiệu suất và chức năng
 
-### Cập Nhật Trước Đó (V3.6)
+### Cập Nhật Trước Đó (V4.1)
 - 🌍 AI nhận biết ngôn ngữ - Nói tiếng Việt/Anh theo server
 - 💬 AI trả lời tự nhiên - Sửa khoảng cách emoji
 - 🌐 Hỗ trợ ngôn ngữ đầy đủ - Tất cả lệnh respect ngôn ngữ
 
-### Cập Nhật Trước Đó (V3.4)
+### Cập Nhật Trước Đó (V4.1)
 - 🐛 Sửa lỗi nghiêm trọng - Bot không khởi động
 - 💍 Hiệu ứng nhẫn hoạt động - Nhẫn tăng thưởng daily
 - 📊 Bảng xếp hạng - Theo dõi top users
 - 🎴 Game Blackjack - Casino blackjack hoàn chỉnh
 - 💰 Cân bằng kinh tế - Daily 1200-1800 xu
 
-### Cập Nhật Trước Đó (V3.3)
+### Cập Nhật Trước Đó (V4.1)
 - ✅ Hệ thống đa ngôn ngữ - Hỗ trợ đầy đủ tiếng Anh & tiếng Việt
 - ✅ Slash Commands - Lệnh `/language` và `/ping`
 - ✅ Độ trễ cực thấp - Tối ưu cho < 30ms phản hồi
@@ -306,15 +307,12 @@ Bot được tối ưu hóa cho độ trễ cực thấp:
 - ✅ Giảm thiểu REST API calls
 - ✅ Độ trễ phản hồi < 30ms
 
-## 🆕 Có Gì Mới Trong V3.3
+## 🆕 Có Gì Mới Trong V4.1
 
-- ✅ **Hệ Thống Đa Ngôn Ngữ** - Hỗ trợ đầy đủ tiếng Anh & Việt
-- ✅ **Slash Commands** - Lệnh `/language` và `/ping`
-- ✅ **Độ Trễ Cực Thấp** - Tối ưu hóa < 30ms
-- ✅ **Hệ Thống Help Thông Minh** - Tự động dịch theo ngôn ngữ server
-- ✅ **AI Cải Thiện** - 15+ câu trả lời đa dạng cho chủ sở hữu
-- ✅ **Tăng Hiệu Suất** - Tải song song, caching thông minh
-- ✅ **Code Sạch Sẽ** - Đã xóa tất cả file Python, thuần Node.js
+- 🔕 **Chặn Ping** - Tự động bỏ qua `@everyone`/`@here` và làm sạch mọi tin nhắn bot gửi đi để không tạo ping không cần thiết.
+- 🎧 **Sửa Khởi Tạo Nhạc** - DisTube luôn nạp cùng Discord client nên lệnh nhạc hoạt động ngay lập tức trên những môi trường hỗ trợ voice (máy thật/VPS).
+- ⚙️ **GitHub Actions Runner** - Workflow mới lint code khi push và cho phép khởi chạy bot trực tiếp từ Actions với secrets.
+- 🚀 **Tối Ưu Độ Trễ** - Bổ sung `npm run lint` và giảm xử lý dư thừa giúp giữ độ trễ & API latency ở mức thấp.
 
 ---
 
@@ -332,12 +330,9 @@ Tự do sử dụng, chỉnh sửa và phân phối. Không yêu cầu ghi công
 
 ## 🔧 GitHub Actions Workflow
 
-Bot tự động chạy trên GitHub Actions:
-- Tự động chạy bot 6 giờ mỗi lần
-- Tự động lưu tất cả dữ liệu người dùng sau mỗi phiên
-- Tự động khởi động lại nếu gặp sự cố
-- Thông báo trạng thái qua Discord webhook
-- Khả năng tuỳ chỉnh thời gian chạy (1-6 giờ)
+1. Thêm các secrets `DISCORD_BOT_TOKEN`, `NVIDIA_API_KEY`, `BOT_OWNER_IDS` và (nếu cần) `DISCORD_WEBHOOK_URL` tại **Settings → Secrets and variables → Actions**.
+2. Mỗi lần push lên `main`, workflow `doro-bot` sẽ tự chạy bước lint (`npm run lint`) để đảm bảo mọi file `.js` hợp lệ.
+3. Để chạy bot trực tiếp từ GitHub, mở tab **Actions**, chọn workflow `doro-bot` rồi bấm **Run workflow**. Job `run-bot` sẽ cài đặt dependency production và chạy `node index.js` lên đến 6 giờ với secrets của bạn (các lệnh nhạc vẫn cần máy hỗ trợ voice, runner chỉ dùng cho tính năng text).
 - Chạy với Node.js 20.x cho hiệu suất tối ưu
 - Tự động cài đặt FFmpeg cho phương tiện
 - Theo dõi và quản lý trạng thái qua GitHub

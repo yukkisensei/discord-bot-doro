@@ -7,11 +7,12 @@ import { prefixSystem } from '../systems/prefixSystem.js';
 import { aiSystem } from '../systems/aiSystem.js';
 import { languageSystem } from '../systems/languageSystem.js';
 import { wordChainSystem } from '../systems/wordChainSystem.js';
+import { sanitizeForOutput } from '../src/util/sanitizeMentions.js';
 
 const helpCategories = {
     en: {
         main: {
-            title: '🌸 Doro Bot V3.9 - Help',
+            title: '🌸 Doro Bot V4.1 - Help',
             description: 'Choose a category to view commands:',
             categories: {
                 economy: '💰 Economy - Balance, daily rewards, banking',
@@ -22,7 +23,7 @@ const helpCategories = {
                 ai: '🤖 AI - Chat with Doro',
                 utility: '⚙️ Utility - Bot tools and settings'
             },
-            footer: 'Use {prefix}help <category> for details | V3.9'
+            footer: 'Use {prefix}help <category> for details | V4.1'
         },
         economy: {
             title: '💰 Economy Commands',
@@ -97,7 +98,7 @@ const helpCategories = {
     },
     vi: {
         main: {
-            title: '🌸 Doro Bot V3.9 - Trợ Giúp',
+            title: '🌸 Doro Bot V4.1 - Trợ Giúp',
             description: 'Chọn danh mục để xem lệnh:',
             categories: {
                 economy: '💰 Kinh Tế - Số dư, thưởng hàng ngày, ngân hàng',
@@ -108,7 +109,7 @@ const helpCategories = {
                 ai: '🤖 AI - Trò chuyện với Doro',
                 utility: '⚙️ Tiện Ích - Công cụ và cài đặt'
             },
-            footer: 'Dùng {prefix}help <danh mục> để xem chi tiết | V3.9'
+            footer: 'Dùng {prefix}help <danh mục> để xem chi tiết | V4.1'
         },
         economy: {
             title: '💰 Lệnh Kinh Tế',
@@ -228,7 +229,7 @@ export const utilityCommands = {
                 });
             }
             
-            embed.setFooter({ text: `Use ${prefix}help to see all categories | V3.9` })
+            embed.setFooter({ text: `Use ${prefix}help to see all categories | V4.1` })
                 .setTimestamp();
             
             await message.reply({ embeds: [embed] });
@@ -262,7 +263,7 @@ export const utilityCommands = {
     afk: {
         execute: async (message, args) => {
             const userId = message.author.id;
-            const reason = args.join(' ') || 'AFK';
+            const reason = sanitizeForOutput(args.join(' ') || 'AFK');
             
             await afkSystem.setAFK(userId, reason);
             await message.reply(`✅ ur now AFK: ${reason}`);
@@ -298,7 +299,7 @@ export const utilityCommands = {
             const success = await prefixSystem.setPrefix(message.guild.id, newPrefix);
             
             if (success) {
-                await message.reply(`✅ prefix changed to \`${newPrefix}\``);
+                await message.reply(`✅ prefix changed to \`${sanitizeForOutput(newPrefix)}\``);
             } else {
                 await message.reply('❌ invalid prefix (max 10 characters)!');
             }
@@ -312,14 +313,18 @@ export const utilityCommands = {
                 return;
             }
             
-            const text = args.join(' ');
+            const text = sanitizeForOutput(args.join(' '));
+            if (!text.trim()) {
+                await message.reply('❌ nothing to send!');
+                return;
+            }
             
             try {
                 await message.delete();
             } catch (error) {
             }
             
-            await message.channel.send(text);
+            await message.channel.send({ content: text, allowedMentions: { parse: [] } });
         }
     },
 

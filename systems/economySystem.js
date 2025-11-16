@@ -1,7 +1,7 @@
 /**
  * Economy System - Money, levels, XP, daily rewards
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const ECONOMY_FILE = 'economy_data.json';
 

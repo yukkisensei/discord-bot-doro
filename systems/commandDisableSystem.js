@@ -1,7 +1,7 @@
 /**
  * Command Disable System - Disable commands per channel
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const DISABLE_FILE = 'disabled_commands.json';
 

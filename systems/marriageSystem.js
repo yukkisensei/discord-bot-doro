@@ -1,7 +1,7 @@
 /**
  * Marriage System - Allow users to marry each other
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const MARRIAGE_FILE = 'marriage_data.json';
 

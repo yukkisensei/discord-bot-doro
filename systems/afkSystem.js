@@ -1,7 +1,7 @@
 /**
  * AFK System - Manage user AFK status
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const AFK_FILE = 'afk_data.json';
 

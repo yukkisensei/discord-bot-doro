@@ -2,10 +2,11 @@ import 'dotenv/config';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import dmProtection from './src/dmProtection.js';
 import { sanitizeForOutput } from './src/util/sanitizeMentions.js';
-import { setClient, distube } from './music.js';
+import { setClient, distube } from './commands/music.js';
 import fetch from 'node-fetch';
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || '';
+const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
 
 const client = new Client({
   intents: [
@@ -20,7 +21,11 @@ const client = new Client({
     Partials.Message,
     Partials.GuildMember,
     Partials.User
-  ]
+  ],
+  allowedMentions: {
+    parse: [],
+    repliedUser: false
+  }
 });
 
 setClient(client);
@@ -101,19 +106,31 @@ client.on('messageCreate', async (message) => {
       if (res.blocked) return;
     }
 
-    const clean = sanitizeForOutput(message.content || '');
+    const rawContent = message.content ?? '';
+    const content = rawContent.trim();
+    if (!content) return;
+    if (MASS_MENTION_REGEX.test(content)) {
+      return;
+    }
+    if (!content.startsWith('!')) return;
 
-    if (clean.startsWith('!play')) {
+    const normalized = content.toLowerCase();
+    const clean = sanitizeForOutput(content);
+
+    if (normalized.startsWith('!play')) {
       const vc = message.member?.voice?.channel;
       if (!vc) {
         return message.channel.send({ content: 'Join a voice channel first.', allowedMentions: { parse: [] } }).catch(()=>{});
       }
-      const q = clean.replace('!play', '').trim();
+      const q = clean.slice('!play'.length).trim();
+      if (!q) {
+        return message.channel.send({ content: 'Please provide a song name or link.', allowedMentions: { parse: [] } }).catch(()=>{});
+      }
       await distube.play(vc, q, { member: message.member, textChannel: message.channel });
       return;
     }
 
-    if (clean.startsWith('!stop')) {
+    if (normalized.startsWith('!stop')) {
       try {
         await distube.stop(message);
         return;
@@ -123,7 +140,7 @@ client.on('messageCreate', async (message) => {
       }
     }
 
-    if (clean.startsWith('!skip')) {
+    if (normalized.startsWith('!skip')) {
       try {
         await distube.skip(message);
         return;

@@ -1,7 +1,7 @@
 /**
  * Multi-language System - English & Vietnamese
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const LANG_FILE = 'language_data.json';
 

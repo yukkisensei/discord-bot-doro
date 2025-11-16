@@ -1,10 +1,10 @@
-# Doro Discord Bot 🌸 V3.9 (Node.js Edition)
+# Doro Discord Bot 🌸 V4.1 (Node.js Edition)
 
 An adorable multi-purpose Discord bot with music, economy, casino games, marriage system, AI chat, and word chain features! Now powered by Node.js with multilingual support!
 
 > 🇻🇳 **[Tiếng Việt](README_VI.md)** | 🇺🇸 **English** (current)
 
-**Version:** V3.9 | **Language:** English | **Status:** ✅ Active
+**Version:** V4.1 | **Language:** English | **Status:** ✅ Active
 
 ## ✨ Key Features
 
@@ -77,13 +77,14 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - Optimized message handling
 - Automatic memory management
 
-## 🆕 What's New in V3.9
+## 🆕 What's New in V4.1
 
-- 🐛 **Dependency Fixed** - Fixed SoundCloud plugin compatibility issues
-- ⚡ **GitHub Actions Only** - Bot now runs exclusively on GitHub Actions for better stability
-- 🔧 **Performance Optimization** - Further reduced latency and improved response times
+- 🔕 **Mention Guard** - The bot now ignores messages containing `@everyone` or `@here`, and every outgoing message (including `!say`) is sanitized so it never relays mass pings.
+- 🎧 **Music Bootstrap Fix** - DisTube now initializes with the live Discord client so music commands work immediately on any host that supports voice (local PC, VPS, etc.).
+- ⚙️ **GitHub Actions Runner** - Added `.github/workflows/bot.yml` to lint on each push and optionally launch the bot from Actions with repository secrets.
+- 🚀 **Latency Tune-Ups** - Leaner message parsing plus a new `npm run lint` syntax sweep keep response and API latency as low as possible.
 
-## Previous Updates (V3.8)
+## Previous Updates (V4.1)
 
 - 🎵 **Full Music System** - Complete YouTube playback with queue, skip, pause, resume
 - ⚡ **Latency Fixed** - Restored optimal settings, back to 20-50ms API latency
@@ -91,19 +92,19 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - 📊 **Queue Management** - View queue, now playing, auto-play next song
 - 🔧 **Balanced Optimization** - Perfect balance between performance and functionality
 
-### Previous Updates (V3.6)
+### Previous Updates (V4.1)
 - 🌍 Language-Aware AI - AI speaks Vietnamese or English based on guild settings
 - 💬 Natural AI Responses - Fixed emoji spacing ("hey=)" not "hey ="))
 - 🌐 Full Language Support - All commands respect guild language settings
 
-### Previous Updates (V3.4)
+### Previous Updates (V4.1)
 - 🐛 Critical Bug Fix - Fixed bot startup issue (event listener)
 - 💍 Ring Effects Working - Shop rings now properly boost daily rewards
 - 📊 Leaderboard System - Track top users by balance/level/streak/wins
 - 🎴 Blackjack Game - Full casino blackjack with 1.5x natural 21
 - 💰 Economy Rebalanced - Daily rewards adjusted to 1200-1800 coins
 
-### Previous Updates (V3.3)
+### Previous Updates (V4.1)
 - ✅ Multilingual System - Full English & Vietnamese support
 - ✅ Slash Commands - `/language` and `/ping` commands
 - ✅ Ultra-Low Latency - Optimized for < 30ms response
@@ -143,6 +144,12 @@ Or for development with auto-restart:
 ```bash
 npm run dev
 ```
+
+## ⚙️ GitHub Actions Runner
+
+1. Add the secrets `DISCORD_BOT_TOKEN`, `NVIDIA_API_KEY`, `BOT_OWNER_IDS`, and (optionally) `DISCORD_WEBHOOK_URL` under **Settings → Secrets and variables → Actions**.
+2. Every push to `main` runs the `lint` job from `.github/workflows/bot.yml`, which executes `npm run lint` to ensure all JavaScript files parse cleanly.
+3. To host the bot directly from GitHub Actions, trigger the `doro-bot` workflow manually (`workflow_dispatch`). The `run-bot` job installs production dependencies and starts `node index.js` with your secrets for text/economy features (Discord voice still requires a local/VPS host).
 
 ## 📝 Command List
 

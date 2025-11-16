@@ -1,7 +1,7 @@
 /**
  * Shop System - OWO-style shop with items
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const INVENTORY_FILE = 'user_inventory.json';
 

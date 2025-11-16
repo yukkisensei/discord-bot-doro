@@ -1,8 +1,12 @@
 {
   "name": "discord-bot-doro",
-  "version": "3.10.0",
+  "version": "4.1.0",
   "type": "module",
   "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "lint": "node scripts/lint.js"
+  },
   "engines": {
     "node": ">=22.12.0"
   },

@@ -1,41 +1,47 @@
 import DisTube from "distube";
 import { SoundCloudPlugin } from "@distube/soundcloud";
+import { sanitizeForOutput } from "../src/util/sanitizeMentions.js";
 
-let clientRef = null;
+export let distube = null;
 
-export function setClient(c) {
-  clientRef = c;
-}
-
-export const distube = new DisTube(clientRef, {
-  leaveOnEmpty: true,
-  leaveOnFinish: false,
-  leaveOnStop: true,
-  emitNewSongOnly: true,
-  searchSongs: 1,
-  nsfw: false,
-  youtubeDL: false,
-  plugins: [new SoundCloudPlugin()]
-});
-
-distube.on("playSong", (queue, song) => {
-  if (queue.textChannel) {
-    queue.textChannel.send({
-      content: `Now playing: ${song.name} (${song.formattedDuration})`,
-      allowedMentions: { parse: [] }
-    }).catch(() => {});
+export function setClient(client) {
+  if (distube) {
+    return distube;
   }
-});
+
+  distube = new DisTube(client, {
+    leaveOnEmpty: true,
+    leaveOnFinish: false,
+    leaveOnStop: true,
+    emitNewSongOnly: true,
+    searchSongs: 1,
+    nsfw: false,
+    youtubeDL: false,
+    plugins: [new SoundCloudPlugin()]
+  });
+
+  distube.on("playSong", (queue, song) => {
+    if (queue.textChannel) {
+      queue.textChannel.send({
+        content: sanitizeForOutput(`Now playing: ${song.name} (${song.formattedDuration})`),
+        allowedMentions: { parse: [] }
+      }).catch(() => {});
+    }
+  });
+
+  return distube;
+}
 
 export async function playMusic(voiceChannel, queryOrUrl, textChannel, member) {
   if (!voiceChannel) throw new Error("no voiceChannel");
+  if (!distube) throw new Error("music system not initialized");
   try {
     await distube.play(voiceChannel, queryOrUrl, { member, textChannel });
-  } catch {
+  } catch (error) {
     if (!/^https?:\/\//i.test(queryOrUrl)) {
       await distube.play(voiceChannel, `search:${queryOrUrl}`, { member, textChannel });
       return;
     }
-    throw err;
+    throw error;
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Word Chain Game System
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const WORD_CHAIN_FILE = 'word_chain_data.json';
 

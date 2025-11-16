@@ -1,7 +1,7 @@
 /**
  * Custom Prefix System - Allows each server to set their own prefix
  */
-import { FileSystem } from '../utils/fileSystem.js';
+import { FileSystem } from '../util/fileSystem.js';
 
 const DATA_FILE = 'prefix_data.json';
 
