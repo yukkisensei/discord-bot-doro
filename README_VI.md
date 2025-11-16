@@ -85,7 +85,7 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - ♾️ **`!infinity`** - Owner bật/tắt trạng thái vô hạn (tiền, luck, slot) cho từng user; `!ping` và các lệnh tiện ích yêu cầu Mod/Admin.
 - 🎒 **Slot Túi & Pet** - Tất cả user mặc định có 100 slot đồ / 3 slot pet và có thể mua item nâng cấp trong danh mục `upgrade`.
 
-## Cập Nhật Trước Đó (V4.3)
+## Cập Nhật Trước Đó (V4.2)
 
 - 🎵 **Hệ Thống Nhạc Hoàn Chỉnh** - Phát YouTube với queue, skip, pause, resume
 - ⚡ **Đã Sửa Latency** - Khôi phục cài đặt tối ưu, API latency về 20-50ms
@@ -93,19 +93,19 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - 📊 **Quản Lý Hàng Đợi** - Xem queue, đang phát, tự động phát tiếp
 - 🔧 **Tối Ưu Cân Bằng** - Cân bằng hoàn hảo giữa hiệu suất và chức năng
 
-### Cập Nhật Trước Đó (V4.3)
+### Cập Nhật Trước Đó (V4.1)
 - 🌍 AI nhận biết ngôn ngữ - Nói tiếng Việt/Anh theo server
 - 💬 AI trả lời tự nhiên - Sửa khoảng cách emoji
 - 🌐 Hỗ trợ ngôn ngữ đầy đủ - Tất cả lệnh respect ngôn ngữ
 
-### Cập Nhật Trước Đó (V4.3)
+### Cập Nhật Trước Đó (V4.0)
 - 🐛 Sửa lỗi nghiêm trọng - Bot không khởi động
 - 💍 Hiệu ứng nhẫn hoạt động - Nhẫn tăng thưởng daily
 - 📊 Bảng xếp hạng - Theo dõi top users
 - 🎴 Game Blackjack - Casino blackjack hoàn chỉnh
 - 💰 Cân bằng kinh tế - Daily 1200-1800 xu
 
-### Cập Nhật Trước Đó (V4.3)
+### Cập Nhật Trước Đó (V3.9)
 - ✅ Hệ thống đa ngôn ngữ - Hỗ trợ đầy đủ tiếng Anh & tiếng Việt
 - ✅ Slash Commands - Lệnh `/language` và `/ping`
 - ✅ Độ trễ cực thấp - Tối ưu cho < 30ms phản hồi

@@ -85,7 +85,7 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - ♾️ **`!infinity` Control** – Owners can toggle truly infinite stats/slots for any user, while everyday commands such as `!ping` are restricted to moderators for extra safety.
 - 🎒 **Bag & Pet Slots** – Every user starts with 100 bag slots / 3 pet slots, can buy upgrades in the new `upgrade` category, and purchases respect the capacity limits.
 
-## Previous Updates (V4.3)
+## Previous Updates (V4.2)
 
 - 🎵 **Full Music System** - Complete YouTube playback with queue, skip, pause, resume
 - ⚡ **Latency Fixed** - Restored optimal settings, back to 20-50ms API latency
@@ -93,19 +93,19 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - 📊 **Queue Management** - View queue, now playing, auto-play next song
 - 🔧 **Balanced Optimization** - Perfect balance between performance and functionality
 
-### Previous Updates (V4.3)
+### Previous Updates (V4.1)
 - 🌍 Language-Aware AI - AI speaks Vietnamese or English based on guild settings
 - 💬 Natural AI Responses - Fixed emoji spacing ("hey=)" not "hey ="))
 - 🌐 Full Language Support - All commands respect guild language settings
 
-### Previous Updates (V4.3)
+### Previous Updates (V4.0)
 - 🐛 Critical Bug Fix - Fixed bot startup issue (event listener)
 - 💍 Ring Effects Working - Shop rings now properly boost daily rewards
 - 📊 Leaderboard System - Track top users by balance/level/streak/wins
 - 🎴 Blackjack Game - Full casino blackjack with 1.5x natural 21
 - 💰 Economy Rebalanced - Daily rewards adjusted to 1200-1800 coins
 
-### Previous Updates (V4.3)
+### Previous Updates (V3.9)
 - ✅ Multilingual System - Full English & Vietnamese support
 - ✅ Slash Commands - `/language` and `/ping` commands
 - ✅ Ultra-Low Latency - Optimized for < 30ms response
