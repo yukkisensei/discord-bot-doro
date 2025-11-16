@@ -185,8 +185,12 @@ client.on('messageCreate', async (message) => {
         await statusMsg.edit('⏹️ Playback stopped and queue cleared.');
         return;
       } catch (e) {
-        console.error(e);
-        await statusMsg.edit('❌ Unable to stop playback right now.');
+        if (e?.errorCode === 'NO_QUEUE') {
+          await statusMsg.edit('ℹ️ Nothing is playing right now.');
+        } else {
+          console.error(e);
+          await statusMsg.edit('❌ Unable to stop playback right now.');
+        }
         return;
       }
     }
@@ -198,8 +202,12 @@ client.on('messageCreate', async (message) => {
         await statusMsg.edit('⏭️ Skipped to the next track.');
         return;
       } catch (e) {
-        console.error(e);
-        await statusMsg.edit('❌ Unable to skip right now.');
+        if (e?.errorCode === 'NO_QUEUE') {
+          await statusMsg.edit('ℹ️ There is no track to skip.');
+        } else {
+          console.error(e);
+          await statusMsg.edit('❌ Unable to skip right now.');
+        }
         return;
       }
     }
