@@ -1,6 +1,9 @@
-import DisTube from "distube";
-import { SoundCloudPlugin } from "@distube/soundcloud";
+import DistubeModule from "distube";
+import SoundcloudModule from "@distube/soundcloud";
 import { sanitizeForOutput } from "../src/util/sanitizeMentions.js";
+
+const DisTubeClass = DistubeModule?.default ?? DistubeModule?.DisTube ?? DistubeModule;
+const SoundCloudPluginClass = SoundcloudModule?.default ?? SoundcloudModule?.SoundCloudPlugin ?? SoundcloudModule;
 
 export let distube = null;
 
@@ -9,7 +12,7 @@ export function setClient(client) {
     return distube;
   }
 
-  distube = new DisTube(client, {
+  distube = new DisTubeClass(client, {
     leaveOnEmpty: true,
     leaveOnFinish: false,
     leaveOnStop: true,
@@ -17,7 +20,7 @@ export function setClient(client) {
     searchSongs: 1,
     nsfw: false,
     youtubeDL: false,
-    plugins: [new SoundCloudPlugin()]
+    plugins: [new SoundCloudPluginClass()]
   });
 
   distube.on("playSong", (queue, song) => {
