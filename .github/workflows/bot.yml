@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 22.12.0
       - name: Install dependencies
-        run: npm install
+        run: HUSKY=0 npm install
       - name: Syntax lint
         run: npm run lint
 
@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: 22.12.0
       - name: Install production deps
-        run: npm install --production
+        run: HUSKY=0 npm install --production
       - name: Start bot
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
