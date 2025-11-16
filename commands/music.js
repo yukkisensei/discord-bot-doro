@@ -19,7 +19,6 @@ export function setClient(client) {
     emitNewSongOnly: true,
     searchSongs: 1,
     nsfw: false,
-    youtubeDL: false,
     plugins: [new SoundCloudPluginClass()]
   });
 
