@@ -37,6 +37,7 @@ jobs:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           BOT_OWNER_IDS: ${{ secrets.BOT_OWNER_IDS }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          HONKAI_ASSET_KEY: ${{ secrets.HONKAI_ASSET_KEY }}
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
