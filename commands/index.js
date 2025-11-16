@@ -1,6 +1,7 @@
 /**
  * Command Handler - Main setup
  */
+import { PermissionsBitField } from 'discord.js';
 import { economyCommands } from './economy.js';
 import { casinoCommands } from './casino.js';
 import { utilityCommands } from './utility.js';
@@ -99,8 +100,12 @@ export function setupCommands(client, ownerIds) {
         const command = allCommands[commandName];
         if (!command) return;
 
-        // Check if user is owner
+        // Check if user is owner or moderator
         const isOwner = ownerIds.includes(message.author.id);
+        const memberPerms = message.member?.permissions;
+        const hasModPerms = isOwner
+            || !!memberPerms?.has(PermissionsBitField.Flags.Administrator)
+            || !!memberPerms?.has(PermissionsBitField.Flags.ManageGuild);
 
         // Check if command requires owner
         if (command.ownerOnly && !isOwner) {
@@ -108,9 +113,14 @@ export function setupCommands(client, ownerIds) {
             return;
         }
 
+        if (command.modOnly && !hasModPerms) {
+            await message.reply('⛔ u need Administrator or Manage Server permission!');
+            return;
+        }
+
         // Execute command
         try {
-            await command.execute(message, args, { isOwner, prefix, ownerIds });
+            await command.execute(message, args, { isOwner, prefix, ownerIds, hasModPerms });
         } catch (error) {
             console.error(`Error executing command ${commandName}:`, error);
             await message.reply('❌ an error occurred while executing this command!').catch(() => {});

@@ -85,6 +85,11 @@ export class EconomySystem {
 
         if (enabled) {
             this.infinityUsers.add(userId);
+            user.balance = Number.MAX_SAFE_INTEGER;
+            user.bank = Number.MAX_SAFE_INTEGER;
+            user.baseDaily = Math.max(user.baseDaily || 0, 999999);
+            user.xp = Number.MAX_SAFE_INTEGER;
+            user.level = Number.MAX_SAFE_INTEGER;
         } else {
             this.infinityUsers.delete(userId);
         }

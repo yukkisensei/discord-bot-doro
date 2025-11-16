@@ -2,6 +2,7 @@
  * Shop System - OWO-style shop with items
  */
 import { FileSystem } from '../util/fileSystem.js';
+import { economy } from './economySystem.js';
 
 const INVENTORY_FILE = 'user_inventory.json';
 
@@ -207,6 +208,28 @@ export class ShopSystem {
                 tradeable: true,
                 usable: true,
                 effect: "+25% XP daily"
+            },
+
+            // ===== UPGRADES =====
+            bag_slot_20: {
+                name: "🧳 Bag Slot +20",
+                description: "permanent +20 inventory slots",
+                price: 45000,
+                category: "upgrade",
+                emoji: "🧳",
+                tradeable: false,
+                usable: true,
+                effect: { type: 'itemCapacity', amount: 20 }
+            },
+            pet_slot_1: {
+                name: "🐾 Pet Slot +1",
+                description: "permanent +1 pet slot",
+                price: 60000,
+                category: "upgrade",
+                emoji: "🐾",
+                tradeable: false,
+                usable: true,
+                effect: { type: 'petCapacity', amount: 1 }
             }
         };
     }
@@ -224,15 +247,64 @@ export class ShopSystem {
             this.inventoryData[userId] = {
                 items: {},
                 equipped: {},
-                activeEffects: []
+                activeEffects: [],
+                itemCapacity: 100,
+                petCapacity: 3,
+                unlimitedSlots: false
             };
             this.save();
         }
-        return this.inventoryData[userId];
+        const inventory = this.inventoryData[userId];
+        if (typeof inventory.itemCapacity !== 'number' || Number.isNaN(inventory.itemCapacity)) {
+            inventory.itemCapacity = 100;
+        }
+        if (typeof inventory.petCapacity !== 'number' || Number.isNaN(inventory.petCapacity)) {
+            inventory.petCapacity = 3;
+        }
+        if (typeof inventory.unlimitedSlots !== 'boolean') {
+            inventory.unlimitedSlots = false;
+        }
+        if (economy.isInfinity(userId) && !inventory.unlimitedSlots) {
+            inventory.unlimitedSlots = true;
+        }
+        return inventory;
+    }
+
+    getUsedSlots(userId, type = 'item') {
+        const inventory = this.getUserInventory(userId);
+        let total = 0;
+        for (const [itemId, quantity] of Object.entries(inventory.items)) {
+            const info = this.getItemInfo(itemId);
+            const category = info?.category || 'misc';
+            const isPetItem = category === 'pet';
+            if (type === 'pet') {
+                if (isPetItem) total += quantity;
+            } else {
+                if (!isPetItem) total += quantity;
+            }
+        }
+        return total;
+    }
+
+    hasCapacity(userId, itemId, quantity = 1) {
+        const inventory = this.getUserInventory(userId);
+        if (inventory.unlimitedSlots || economy.isInfinity(userId)) {
+            return true;
+        }
+        const item = this.getItemInfo(itemId);
+        if (!item) return true;
+        if (item.category === 'upgrade') return true;
+        const isPet = item.category === 'pet';
+        const capacity = isPet ? inventory.petCapacity : inventory.itemCapacity;
+        const used = this.getUsedSlots(userId, isPet ? 'pet' : 'item');
+        return used + quantity <= capacity;
     }
 
     async addItem(userId, itemId, quantity = 1) {
         const inventory = this.getUserInventory(userId);
+        if (!this.hasCapacity(userId, itemId, quantity)) {
+            return false;
+        }
         
         if (!inventory.items[itemId]) {
             inventory.items[itemId] = 0;
@@ -304,6 +376,9 @@ export class ShopSystem {
         if (inventory.equipped[category]) {
             const oldItem = inventory.equipped[category];
             if (oldItem !== itemId) {
+                if (!this.hasCapacity(userId, oldItem, 1)) {
+                    return { success: false, message: "no free slots to unequip current item!" };
+                }
                 await this.addItem(userId, oldItem, 1);
             }
         }
@@ -325,6 +400,10 @@ export class ShopSystem {
         
         const itemId = inventory.equipped[category];
         const item = this.getItemInfo(itemId);
+
+        if (!this.hasCapacity(userId, itemId, 1)) {
+            return { success: false, message: "ur bag is full!" };
+        }
         
         await this.addItem(userId, itemId, 1);
         delete inventory.equipped[category];
@@ -350,9 +429,11 @@ export class ShopSystem {
         
         await this.removeItem(userId, itemId, 1);
         
+        const rawEffect = item.effect;
+        const effectType = typeof rawEffect === 'object' && rawEffect?.type ? rawEffect.type : item.category;
         const effectData = {
-            type: item.category,
-            effect: item.effect,
+            type: effectType,
+            effect: rawEffect,
             itemName: item.name
         };
         
@@ -409,14 +490,24 @@ export class ShopSystem {
         // Add items
         for (let i = 0; i < numItems; i++) {
             const itemId = possibleItems[Math.floor(Math.random() * possibleItems.length)];
-            await this.addItem(userId, itemId, 1);
             const itemInfo = this.getItemInfo(itemId);
-            rewards.push({
-                type: 'item',
-                itemId,
-                emoji: itemInfo.emoji,
-                name: itemInfo.name
-            });
+            if (!itemInfo) continue;
+            const added = await this.addItem(userId, itemId, 1);
+            if (!added) {
+                rewards.push({
+                    type: 'item',
+                    itemId,
+                    emoji: '⚠️',
+                    name: `${itemInfo.name} (inventory full)`
+                });
+            } else {
+                rewards.push({
+                    type: 'item',
+                    itemId,
+                    emoji: itemInfo.emoji,
+                    name: itemInfo.name
+                });
+            }
         }
         
         return { success: true, message: `opened ${item.emoji} ${item.name}!`, rewards };
@@ -441,6 +532,43 @@ export class ShopSystem {
         }
         
         return total;
+    }
+
+    async increaseCapacity(userId, type, amount) {
+        if (!amount) return this.getCapacityStatus(userId);
+        const inventory = this.getUserInventory(userId);
+        if (inventory.unlimitedSlots || economy.isInfinity(userId)) {
+            return this.getCapacityStatus(userId);
+        }
+        if (type === 'itemCapacity') {
+            inventory.itemCapacity += amount;
+        } else if (type === 'petCapacity') {
+            inventory.petCapacity += amount;
+        }
+        await this.save();
+        return this.getCapacityStatus(userId);
+    }
+
+    async setUnlimitedSlots(userId, enabled) {
+        const inventory = this.getUserInventory(userId);
+        inventory.unlimitedSlots = enabled;
+        await this.save();
+    }
+
+    getCapacityStatus(userId) {
+        const inventory = this.getUserInventory(userId);
+        const itemCap = (inventory.unlimitedSlots || economy.isInfinity(userId)) ? '∞' : inventory.itemCapacity;
+        const petCap = (inventory.unlimitedSlots || economy.isInfinity(userId)) ? '∞' : inventory.petCapacity;
+        return {
+            item: {
+                used: this.getUsedSlots(userId, 'item'),
+                capacity: itemCap
+            },
+            pet: {
+                used: this.getUsedSlots(userId, 'pet'),
+                capacity: petCap
+            }
+        };
     }
 }
 

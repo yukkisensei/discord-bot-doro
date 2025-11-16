@@ -1,10 +1,10 @@
-# Doro Discord Bot 🌸 V4.2 (Phiên Bản Node.js)
+# Doro Discord Bot 🌸 V4.3 (Phiên Bản Node.js)
 
 Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế, casino, kết hôn, trò chuyện AI và nối từ! Hiện được vận hành bởi Node.js với hỗ trợ đa ngôn ngữ!
 
 > 🇻🇳 **Tiếng Việt** (hiện tại) | 🇺🇸 **[English](README.md)**
 
-**Phiên Bản:** V4.2 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
+**Phiên Bản:** V4.3 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
 
 ## ✨ Tính Năng Chính
 
@@ -39,6 +39,7 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
   - 📦 Hộp phần thưởng với phần thưởng ngẫu nhiên
   - 🍀 Vật phẩm may mắn cho thưởng casino
   - 🎀 Vật phẩm trang trí và sưu tầm
+- Túi đồ mặc định 100 slot & 3 slot pet – có thể mua vật phẩm nâng cấp để mở rộng
 - Quản lý túi đồ
 - Trang bị và sử dụng vật phẩm
 
@@ -77,14 +78,14 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - Xử lý tin nhắn được tối ưu
 - Quản lý bộ nhớ tự động
 
-## 🆕 Có Gì Mới Trong V4.2
+## 🆕 Có Gì Mới Trong V4.3
 
-- 🤖 **Sửa Khởi Động Hệ Thống** - Tất cả hệ thống (kinh tế, shop, AFK, ngôn ngữ, AI, …) được tải trước khi đăng nhập nên lệnh prefix như `!ping`, `!daily` chạy lại bình thường sau mỗi lần deploy.
-- 📦 **Thêm Axios Cho AI** - Đã cài sẵn `axios` trong bot để AI không còn lỗi `ERR_MODULE_NOT_FOUND` khi chạy trên GitHub Actions.
-- 🎵 **Ổn Định Nhạc** - Distube tương thích hoàn toàn với ESM, chỉ còn một listener thông báo nên không còn cảnh báo MaxListeners.
-- 🔁 **Workflow Liên Tục** - Runner 6 giờ vẫn commit dữ liệu và chuỗi phiên tự động nhưng không còn ảnh hưởng đến hệ thống lệnh.
+- 🤖 **AI thực tế hơn** - Prompt tiếng Anh & Việt được viết lại để Doro nói chuyện như người thật (phân biệt chế độ chủ vs trợ lý).
+- 🗣️ **`!say -r` cho Owner** - Lệnh `!say` giờ hỗ trợ trả lời bất kỳ tin nhắn nào và bị giới hạn cho BOT_OWNER_IDS.
+- ♾️ **`!infinity`** - Owner bật/tắt trạng thái vô hạn (tiền, luck, slot) cho từng user; `!ping` và các lệnh tiện ích yêu cầu Mod/Admin.
+- 🎒 **Slot Túi & Pet** - Tất cả user mặc định có 100 slot đồ / 3 slot pet và có thể mua item nâng cấp trong danh mục `upgrade`.
 
-## Cập Nhật Trước Đó (V4.1)
+## Cập Nhật Trước Đó (V4.3)
 
 - 🎵 **Hệ Thống Nhạc Hoàn Chỉnh** - Phát YouTube với queue, skip, pause, resume
 - ⚡ **Đã Sửa Latency** - Khôi phục cài đặt tối ưu, API latency về 20-50ms
@@ -92,19 +93,19 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - 📊 **Quản Lý Hàng Đợi** - Xem queue, đang phát, tự động phát tiếp
 - 🔧 **Tối Ưu Cân Bằng** - Cân bằng hoàn hảo giữa hiệu suất và chức năng
 
-### Cập Nhật Trước Đó (V4.1)
+### Cập Nhật Trước Đó (V4.3)
 - 🌍 AI nhận biết ngôn ngữ - Nói tiếng Việt/Anh theo server
 - 💬 AI trả lời tự nhiên - Sửa khoảng cách emoji
 - 🌐 Hỗ trợ ngôn ngữ đầy đủ - Tất cả lệnh respect ngôn ngữ
 
-### Cập Nhật Trước Đó (V4.1)
+### Cập Nhật Trước Đó (V4.3)
 - 🐛 Sửa lỗi nghiêm trọng - Bot không khởi động
 - 💍 Hiệu ứng nhẫn hoạt động - Nhẫn tăng thưởng daily
 - 📊 Bảng xếp hạng - Theo dõi top users
 - 🎴 Game Blackjack - Casino blackjack hoàn chỉnh
 - 💰 Cân bằng kinh tế - Daily 1200-1800 xu
 
-### Cập Nhật Trước Đó (V4.1)
+### Cập Nhật Trước Đó (V4.3)
 - ✅ Hệ thống đa ngôn ngữ - Hỗ trợ đầy đủ tiếng Anh & tiếng Việt
 - ✅ Slash Commands - Lệnh `/language` và `/ping`
 - ✅ Độ trễ cực thấp - Tối ưu cho < 30ms phản hồi
@@ -176,6 +177,7 @@ npm run dev
 - `!inventory [@user]` - Xem túi đồ
 - `!use [vật phẩm]` - Sử dụng vật phẩm
 - `!equip [vật phẩm]` - Trang bị vật phẩm
+- `bag_slot_20` / `pet_slot_1` - Vật phẩm nâng cấp slot vĩnh viễn
 
 ### 💍 Lệnh Kết Hôn
 - `!marry @user` - Cầu hôn (cần nhẫn)
@@ -186,9 +188,11 @@ npm run dev
 
 ### ⚙️ Lệnh Tiện Ích
 - `!help` - Xem tất cả lệnh
-- `!ping` - Kiểm tra độ trễ bot
+- `!ping` - Kiểm tra độ trễ bot (Mod/Admin/Owner)
 - `!avatar [@user]` - Lấy avatar
 - `!afk [lý do]` - Đặt trạng thái AFK
+- `!say [-r id] <tin nhắn>` - Owner phát hoặc trả lời tin nhắn
+- `!infinity <@user> [on/off]` - Owner bật/tắt trạng thái vô hạn cho user
 - `!setprefix <prefix>` - Thay đổi prefix server (Chỉ Admin)
 
 ### 🤖 Trò Chuyện AI
@@ -307,7 +311,7 @@ Bot được tối ưu hóa cho độ trễ cực thấp:
 - ✅ Giảm thiểu REST API calls
 - ✅ Độ trễ phản hồi < 30ms
 
-## 🆕 Có Gì Mới Trong V4.1
+## 🆕 Có Gì Mới Trong V4.3
 
 - 🔕 **Chặn Ping** - Tự động bỏ qua `@everyone`/`@here` và làm sạch mọi tin nhắn bot gửi đi để không tạo ping không cần thiết.
 - 🎧 **Sửa Khởi Tạo Nhạc** - DisTube luôn nạp cùng Discord client nên lệnh nhạc hoạt động ngay lập tức trên những môi trường hỗ trợ voice (máy thật/VPS).

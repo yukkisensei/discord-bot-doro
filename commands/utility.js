@@ -8,11 +8,13 @@ import { aiSystem } from '../systems/aiSystem.js';
 import { languageSystem } from '../systems/languageSystem.js';
 import { wordChainSystem } from '../systems/wordChainSystem.js';
 import { sanitizeForOutput } from '../src/util/sanitizeMentions.js';
+import { economy } from '../systems/economySystem.js';
+import { shopSystem } from '../systems/shopSystem.js';
 
 const helpCategories = {
     en: {
         main: {
-            title: '🌸 Doro Bot V4.2 - Help',
+            title: '🌸 Doro Bot V4.3 - Help',
             description: 'Choose a category to view commands:',
             categories: {
                 economy: '💰 Economy - Balance, daily rewards, banking',
@@ -23,7 +25,7 @@ const helpCategories = {
                 ai: '🤖 AI - Chat with Doro',
                 utility: '⚙️ Utility - Bot tools and settings'
             },
-            footer: 'Use {prefix}help <category> for details | V4.2'
+            footer: 'Use {prefix}help <category> for details | V4.3'
         },
         economy: {
             title: '💰 Economy Commands',
@@ -86,10 +88,11 @@ const helpCategories = {
             title: '⚙️ Utility Commands',
             commands: [
                 ['help [category]', 'Show this help menu'],
-                ['ping', 'Check bot latency'],
+                ['ping', 'Check bot latency (mods only)'],
                 ['avatar [@user]', 'Get user avatar'],
                 ['afk [reason]', 'Set AFK status'],
-                ['say <message>', 'Make bot say something'],
+                ['say [-r id] <message>', 'Owner broadcast or reply'],
+                ['infinity <@user> [on/off]', 'Owner toggles infinite stats'],
                 ['setprefix <prefix>', 'Change server prefix (Admin)'],
                 ['/language', 'Change bot language (Admin)'],
                 ['wordchain', 'Word chain game (see !wordchain for help)']
@@ -98,7 +101,7 @@ const helpCategories = {
     },
     vi: {
         main: {
-            title: '🌸 Doro Bot V4.2 - Trợ Giúp',
+            title: '🌸 Doro Bot V4.3 - Trợ Giúp',
             description: 'Chọn danh mục để xem lệnh:',
             categories: {
                 economy: '💰 Kinh Tế - Số dư, thưởng hàng ngày, ngân hàng',
@@ -109,7 +112,7 @@ const helpCategories = {
                 ai: '🤖 AI - Trò chuyện với Doro',
                 utility: '⚙️ Tiện Ích - Công cụ và cài đặt'
             },
-            footer: 'Dùng {prefix}help <danh mục> để xem chi tiết | V4.2'
+            footer: 'Dùng {prefix}help <danh mục> để xem chi tiết | V4.3'
         },
         economy: {
             title: '💰 Lệnh Kinh Tế',
@@ -172,10 +175,11 @@ const helpCategories = {
             title: '⚙️ Lệnh Tiện Ích',
             commands: [
                 ['help [danh mục]', 'Hiển thị menu trợ giúp'],
-                ['ping', 'Kiểm tra độ trễ bot'],
+                ['ping', 'Kiểm tra độ trễ bot (mod trở lên)'],
                 ['avatar [@user]', 'Lấy avatar người dùng'],
                 ['afk [lý do]', 'Đặt trạng thái AFK'],
-                ['say <tin nhắn>', 'Bắt bot nói gì đó'],
+                ['say [-r id] <tin nhắn>', 'Owner phát tin nhắn/ trả lời'],
+                ['infinity <@user> [on/off]', 'Owner bật/tắt trạng thái vô hạn'],
                 ['setprefix <prefix>', 'Thay đổi prefix server (Admin)'],
                 ['/language', 'Thay đổi ngôn ngữ bot (Admin)'],
                 ['wordchain', 'Trò chơi nối từ (xem !wordchain để biết thêm)']
@@ -229,7 +233,7 @@ export const utilityCommands = {
                 });
             }
             
-            embed.setFooter({ text: `Use ${prefix}help to see all categories | V4.2` })
+            embed.setFooter({ text: `Use ${prefix}help to see all categories | V4.3` })
                 .setTimestamp();
             
             await message.reply({ embeds: [embed] });
@@ -237,6 +241,7 @@ export const utilityCommands = {
     },
 
     ping: {
+        modOnly: true,
         execute: async (message) => {
             const sent = await message.reply('🏓 Pinging...');
             const latency = sent.createdTimestamp - message.createdTimestamp;
@@ -307,13 +312,35 @@ export const utilityCommands = {
     },
 
     say: {
+        ownerOnly: true,
         execute: async (message, args) => {
             if (!args[0]) {
-                await message.reply('usage: `say <message>`');
+                await message.reply('usage: `say [-r <messageId>] <message>`');
                 return;
             }
+
+            let targetMessage = null;
+            let contentArgs = args;
+
+            if (args[0] === '-r') {
+                const replyId = args[1];
+                if (!replyId) {
+                    await message.reply('❌ provide a message ID to reply to!');
+                    return;
+                }
+                targetMessage = await message.channel.messages.fetch(replyId).catch(() => null);
+                if (!targetMessage) {
+                    await message.reply('❌ cannot find that message in this channel!');
+                    return;
+                }
+                contentArgs = args.slice(2);
+                if (contentArgs.length === 0) {
+                    await message.reply('❌ nothing to send!');
+                    return;
+                }
+            }
             
-            const text = sanitizeForOutput(args.join(' '));
+            const text = sanitizeForOutput(contentArgs.join(' '));
             if (!text.trim()) {
                 await message.reply('❌ nothing to send!');
                 return;
@@ -323,8 +350,43 @@ export const utilityCommands = {
                 await message.delete();
             } catch (error) {
             }
+
+            const payload = {
+                content: text,
+                allowedMentions: { parse: [] }
+            };
+
+            if (targetMessage) {
+                payload.reply = { messageReference: targetMessage.id };
+            }
             
-            await message.channel.send({ content: text, allowedMentions: { parse: [] } });
+            await message.channel.send(payload);
+        }
+    },
+
+    infinity: {
+        ownerOnly: true,
+        execute: async (message, args) => {
+            const target = message.mentions.users.first() || (args[0] ? await message.client.users.fetch(args[0]).catch(() => null) : null);
+            if (!target) {
+                await message.reply('usage: `infinity <@user|userId> [on/off]`');
+                return;
+            }
+
+            const stateArg = (args[1] || '').toLowerCase();
+            let enable = true;
+            if (['off', 'disable', 'false'].includes(stateArg)) {
+                enable = false;
+            }
+
+            await economy.setInfinity(target.id, enable);
+            await shopSystem.setUnlimitedSlots(target.id, enable);
+
+            await message.reply(
+                enable
+                    ? `♾️ ${target.username} now has infinite stats, luck, and slots!`
+                    : `✅ ${target.username} returned to normal stats.`
+            );
         }
     },
 

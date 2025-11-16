@@ -36,7 +36,7 @@ export const shopCommands = {
                 embed.addFields({ name: `${cat.toUpperCase()}`, value: itemList || 'No items', inline: false });
             }
             
-            embed.setFooter({ text: 'Categories: ring, lootbox, consumable, collectible, pet' });
+            embed.setFooter({ text: 'Categories: ring, lootbox, consumable, collectible, pet, upgrade' });
             
             await message.reply({ embeds: [embed] });
         }
@@ -66,6 +66,14 @@ export const shopCommands = {
                 return;
             }
             
+            if (!shopSystem.hasCapacity(userId, itemId, 1)) {
+                const capacity = shopSystem.getCapacityStatus(userId);
+                const isPet = item.category === 'pet';
+                const status = isPet ? capacity.pet : capacity.item;
+                await message.reply(`❌ your ${isPet ? 'pet' : 'bag'} slots are full (${status.used}/${status.capacity}). Buy slot upgrades first!`);
+                return;
+            }
+
             // Remove money
             await economy.removeMoney(userId, item.price);
             
@@ -80,6 +88,7 @@ export const shopCommands = {
         execute: async (message) => {
             const target = message.mentions.users.first() || message.author;
             const inventory = shopSystem.getUserInventory(target.id);
+            const caps = shopSystem.getCapacityStatus(target.id);
             
             const embed = new EmbedBuilder()
                 .setColor('#9B59B6')
@@ -115,6 +124,10 @@ export const shopCommands = {
             }
             
             const totalValue = shopSystem.getInventoryValue(target.id);
+            embed.addFields(
+                { name: '🎒 Bag Slots', value: `${caps.item.used}/${caps.item.capacity}`, inline: true },
+                { name: '🐾 Pet Slots', value: `${caps.pet.used}/${caps.pet.capacity}`, inline: true }
+            );
             embed.setFooter({ text: `Total Value: ${totalValue.toLocaleString()} coins` });
             
             await message.reply({ embeds: [embed] });
@@ -162,10 +175,27 @@ export const shopCommands = {
                         }
                         
                         await message.reply({ embeds: [embed] });
+                    } else {
+                        await message.reply(lootResult.message);
                     }
-                } else {
-                    await message.reply(result.message);
+                    return;
                 }
+
+                if (result.effect?.type === 'itemCapacity') {
+                    const amount = typeof result.effect.effect === 'object' ? (result.effect.effect.amount || 0) : 0;
+                    const status = await shopSystem.increaseCapacity(userId, 'itemCapacity', amount);
+                    await message.reply(`🧳 Bag slots increased! (${status.item.used}/${status.item.capacity})`);
+                    return;
+                }
+
+                if (result.effect?.type === 'petCapacity') {
+                    const amount = typeof result.effect.effect === 'object' ? (result.effect.effect.amount || 0) : 0;
+                    const status = await shopSystem.increaseCapacity(userId, 'petCapacity', amount);
+                    await message.reply(`🐾 Pet slots increased! (${status.pet.used}/${status.pet.capacity})`);
+                    return;
+                }
+
+                await message.reply(result.message);
             } else {
                 await message.reply(result.message);
             }

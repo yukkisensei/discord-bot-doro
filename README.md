@@ -1,10 +1,10 @@
-# Doro Discord Bot 🌸 V4.2 (Node.js Edition)
+# Doro Discord Bot 🌸 V4.3 (Node.js Edition)
 
 An adorable multi-purpose Discord bot with music, economy, casino games, marriage system, AI chat, and word chain features! Now powered by Node.js with multilingual support!
 
 > 🇻🇳 **[Tiếng Việt](README_VI.md)** | 🇺🇸 **English** (current)
 
-**Version:** V4.2 | **Language:** English | **Status:** ✅ Active
+**Version:** V4.3 | **Language:** English | **Status:** ✅ Active
 
 ## ✨ Key Features
 
@@ -39,6 +39,7 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
   - 📦 Loot boxes with random rewards
   - 🍀 Lucky items for casino bonuses
   - 🎀 Cosmetic items and collectibles
+- Inventory starts with 100 bag slots & 3 pet slots — buy upgrade items to expand
 - Inventory management
 - Item equipping and usage
 
@@ -77,14 +78,14 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - Optimized message handling
 - Automatic memory management
 
-## 🆕 What's New in V4.2
+## 🆕 What's New in V4.3
 
-- 🤖 **System Boot Fix** - All subsystems (economy, shop, AFK, language, etc.) load before login, so every prefix command (`!ping`, `!daily`, …) responds consistently after deployments.
-- 📦 **AI Dependency Patch** - Bundled `axios` directly with the bot, preventing `ERR_MODULE_NOT_FOUND` when the AI system spins up on GitHub Actions.
-- 🎵 **Music Stability** - Distube is now instantiated safely in ESM environments and its announcements route through a single listener, eliminating MaxListeners warnings.
-- 🔁 **Workflow Guardrails** - The auto-runner still sanitizes mass mentions but now chains 6‑hour sessions with data commits without interrupting command handling.
+- 🧠 **Realistic AI Prompts** – Completely refreshed English & Vietnamese instructions so Doro replies like a real person (owner mode vs. helper mode) while still following formatting rules.
+- 🗣️ **Powerful `!say`** – Owner-only broadcast now supports replying to any message with `!say -r <messageId> text`, keeping announcement threads tidy.
+- ♾️ **`!infinity` Control** – Owners can toggle truly infinite stats/slots for any user, while everyday commands such as `!ping` are restricted to moderators for extra safety.
+- 🎒 **Bag & Pet Slots** – Every user starts with 100 bag slots / 3 pet slots, can buy upgrades in the new `upgrade` category, and purchases respect the capacity limits.
 
-## Previous Updates (V4.1)
+## Previous Updates (V4.3)
 
 - 🎵 **Full Music System** - Complete YouTube playback with queue, skip, pause, resume
 - ⚡ **Latency Fixed** - Restored optimal settings, back to 20-50ms API latency
@@ -92,19 +93,19 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - 📊 **Queue Management** - View queue, now playing, auto-play next song
 - 🔧 **Balanced Optimization** - Perfect balance between performance and functionality
 
-### Previous Updates (V4.1)
+### Previous Updates (V4.3)
 - 🌍 Language-Aware AI - AI speaks Vietnamese or English based on guild settings
 - 💬 Natural AI Responses - Fixed emoji spacing ("hey=)" not "hey ="))
 - 🌐 Full Language Support - All commands respect guild language settings
 
-### Previous Updates (V4.1)
+### Previous Updates (V4.3)
 - 🐛 Critical Bug Fix - Fixed bot startup issue (event listener)
 - 💍 Ring Effects Working - Shop rings now properly boost daily rewards
 - 📊 Leaderboard System - Track top users by balance/level/streak/wins
 - 🎴 Blackjack Game - Full casino blackjack with 1.5x natural 21
 - 💰 Economy Rebalanced - Daily rewards adjusted to 1200-1800 coins
 
-### Previous Updates (V4.1)
+### Previous Updates (V4.3)
 - ✅ Multilingual System - Full English & Vietnamese support
 - ✅ Slash Commands - `/language` and `/ping` commands
 - ✅ Ultra-Low Latency - Optimized for < 30ms response
@@ -181,6 +182,7 @@ npm run dev
 - `!inventory [@user]` - View inventory
 - `!use [item]` - Use an item
 - `!equip [item]` - Equip an item
+- `bag_slot_20` / `pet_slot_1` - New upgrade items that permanently add slots
 
 ### Marriage Commands
 - `!marry @user` - Propose (needs ring)
@@ -191,9 +193,11 @@ npm run dev
 
 ### Utility Commands
 - `!help` - View all commands
-- `!ping` - Check bot latency
+- `!ping` - Check bot latency (Mods/Admins/Owners)
 - `!avatar [@user]` - Get user avatar
 - `!afk [reason]` - Set AFK status
+- `!say [-r id] <message>` - Owner broadcast or reply to an existing message
+- `!infinity <@user> [on/off]` - Owner toggles infinite stats/slots for a user
 - `!setprefix <prefix>` - Change server prefix (Admin only)
 
 ### 🤖 AI Chat
