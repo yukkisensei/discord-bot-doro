@@ -37,8 +37,8 @@ jobs:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           BOT_OWNER_IDS: ${{ secrets.BOT_OWNER_IDS }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          REPO_TOKEN=${{ secrets.REPO_TOKEN }}
-          GITHUB_REPOSITORY=${{ github.repository }}
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           set +e
           START_TS=$(date +%s)
