@@ -23,6 +23,7 @@ export function setClient(client) {
   });
 
   distube.on("playSong", (queue, song) => {
+    console.log(`Now playing: ${song.name} (${song.formattedDuration})`);
     if (queue.textChannel) {
       queue.textChannel.send({
         content: sanitizeForOutput(`Now playing: ${song.name} (${song.formattedDuration})`),

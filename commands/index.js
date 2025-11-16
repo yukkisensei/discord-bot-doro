@@ -4,7 +4,6 @@
 import { economyCommands } from './economy.js';
 import { casinoCommands } from './casino.js';
 import { utilityCommands } from './utility.js';
-import { musicCommands } from './music.js';
 import { shopCommands } from './shop.js';
 import { marriageCommands } from './marriage.js';
 import { prefixSystem } from '../systems/prefixSystem.js';
@@ -12,13 +11,14 @@ import { disableSystem } from '../systems/commandDisableSystem.js';
 import { afkSystem } from '../systems/afkSystem.js';
 import { wordChainSystem } from '../systems/wordChainSystem.js';
 
+const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
+
 export function setupCommands(client, ownerIds) {
     // Combine all commands
     const allCommands = {
         ...economyCommands,
         ...casinoCommands,
         ...utilityCommands,
-        ...musicCommands,
         ...shopCommands,
         ...marriageCommands
     };
@@ -28,6 +28,7 @@ export function setupCommands(client, ownerIds) {
         if (message.author.bot) return;
         if (!message.content) return;
         if (!message.guild) return; // DMs not supported
+        if (MASS_MENTION_REGEX.test(message.content)) return;
 
         // Handle AFK removal (only if user is AFK)
         if (afkSystem.isAFK(message.author.id)) {

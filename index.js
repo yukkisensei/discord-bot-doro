@@ -2,11 +2,45 @@ import 'dotenv/config';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import dmProtection from './src/dmProtection.js';
 import { sanitizeForOutput } from './src/util/sanitizeMentions.js';
-import { setClient, distube } from './commands/music.js';
+import { setClient } from './commands/music.js';
+import { setupCommands } from './commands/index.js';
+import { prefixSystem } from './systems/prefixSystem.js';
+import { economy } from './systems/economySystem.js';
+import { shopSystem } from './systems/shopSystem.js';
+import { marriageSystem } from './systems/marriageSystem.js';
+import { afkSystem } from './systems/afkSystem.js';
+import { languageSystem } from './systems/languageSystem.js';
+import { disableSystem } from './systems/commandDisableSystem.js';
+import { muteSystem } from './systems/muteSystem.js';
+import { wordChainSystem } from './systems/wordChainSystem.js';
+import { aiSystem } from './systems/aiSystem.js';
 import fetch from 'node-fetch';
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || '';
 const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
+const OWNER_IDS = (process.env.BOT_OWNER_IDS || '')
+  .split(',')
+  .map((id) => id.trim())
+  .filter(Boolean);
+
+economy.ownerIds = OWNER_IDS;
+aiSystem.ownerIds = OWNER_IDS;
+marriageSystem.ownerIds = OWNER_IDS;
+
+async function initSystems() {
+  await Promise.all([
+    prefixSystem.init(),
+    economy.init(),
+    shopSystem.init(),
+    marriageSystem.init(),
+    afkSystem.init(),
+    languageSystem.init(),
+    disableSystem.init(),
+    muteSystem.init(),
+    wordChainSystem.init(),
+    aiSystem.init()
+  ]);
+}
 
 const client = new Client({
   intents: [
@@ -28,7 +62,7 @@ const client = new Client({
   }
 });
 
-setClient(client);
+const music = setClient(client);
 
 async function sendWebhook(content) {
   try {
@@ -43,7 +77,7 @@ async function sendWebhook(content) {
   }
 }
 
-client.once('ready', async () => {
+client.once('clientReady', async () => {
   try {
     const msg = `Bot ready: ${client.user?.tag || 'unknown'}`;
     console.log(msg);
@@ -77,23 +111,11 @@ process.on('uncaughtException', async (err) => {
   }
 });
 
-distube.on('error', async (channel, err) => {
+music.on('error', async (channel, err) => {
   try {
     console.error('distube error', err);
     await sendWebhook('Distube error: ' + String(err));
   } catch {}
-});
-
-distube.on('playSong', async (queue, song) => {
-  try {
-    const text = `Now playing: ${song.name} (${song.formattedDuration})`;
-    console.log(text);
-    if (queue.textChannel) {
-      queue.textChannel.send({ content: sanitizeForOutput(text), allowedMentions: { parse: [] } }).catch(()=>{});
-    }
-  } catch (e) {
-    console.error(e);
-  }
 });
 
 client.on('messageCreate', async (message) => {
@@ -126,13 +148,13 @@ client.on('messageCreate', async (message) => {
       if (!q) {
         return message.channel.send({ content: 'Please provide a song name or link.', allowedMentions: { parse: [] } }).catch(()=>{});
       }
-      await distube.play(vc, q, { member: message.member, textChannel: message.channel });
+      await music.play(vc, q, { member: message.member, textChannel: message.channel });
       return;
     }
 
     if (normalized.startsWith('!stop')) {
       try {
-        await distube.stop(message);
+        await music.stop(message);
         return;
       } catch (e) {
         console.error(e);
@@ -142,7 +164,7 @@ client.on('messageCreate', async (message) => {
 
     if (normalized.startsWith('!skip')) {
       try {
-        await distube.skip(message);
+        await music.skip(message);
         return;
       } catch (e) {
         console.error(e);
@@ -167,7 +189,7 @@ client.on('interactionCreate', async (interaction) => {
           return interaction.reply({ content: 'Join a voice channel first.', ephemeral: true, allowedMentions: { parse: [] } });
         }
         const q = interaction.options.getString('query');
-        await distube.play(vc, q, { member: interaction.member, textChannel: interaction.channel });
+        await music.play(vc, q, { member: interaction.member, textChannel: interaction.channel });
         await interaction.reply({ content: 'Playing.', ephemeral: true, allowedMentions: { parse: [] } });
       }
     }
@@ -183,6 +205,10 @@ client.on('interactionCreate', async (interaction) => {
       await sendWebhook('DISCORD_BOT_TOKEN not set');
       process.exit(1);
     }
+
+    await initSystems();
+    setupCommands(client, OWNER_IDS);
+
     await client.login(process.env.DISCORD_BOT_TOKEN);
   } catch (e) {
     console.error('login error', e);
