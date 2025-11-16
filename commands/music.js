@@ -1,35 +1,41 @@
-import DisTube from 'distube';
-import { SoundCloudPlugin } from '@distube/soundcloud';
+import DisTube from "distube";
+import { SoundCloudPlugin } from "@distube/soundcloud";
 
-// This module expects the main file to call setClient(client) after client creation
-let clientInstance = null;
-export function setClient(client) {
-  clientInstance = client;
+let clientRef = null;
+
+export function setClient(c) {
+  clientRef = c;
 }
 
-export const distube = new DisTube.default(clientInstance, {
+export const distube = new DisTube(clientRef, {
   leaveOnEmpty: true,
   leaveOnFinish: false,
   leaveOnStop: true,
   emitNewSongOnly: true,
-  plugins: [new SoundCloudPlugin()],
+  searchSongs: 1,
+  nsfw: false,
   youtubeDL: false,
+  plugins: [new SoundCloudPlugin()]
+});
+
+distube.on("playSong", (queue, song) => {
+  if (queue.textChannel) {
+    queue.textChannel.send({
+      content: `Now playing: ${song.name} (${song.formattedDuration})`,
+      allowedMentions: { parse: [] }
+    }).catch(() => {});
+  }
 });
 
 export async function playMusic(voiceChannel, queryOrUrl, textChannel, member) {
-  if (!voiceChannel) throw new Error('No voice channel provided');
+  if (!voiceChannel) throw new Error("no voiceChannel");
   try {
     await distube.play(voiceChannel, queryOrUrl, { member, textChannel });
-  } catch (err) {
+  } catch {
     if (!/^https?:\/\//i.test(queryOrUrl)) {
-      try {
-        await distube.play(voiceChannel, `search:${queryOrUrl}`, { member, textChannel });
-        return;
-      } catch (err2) {
-        throw err;
-      }
-    } else {
-      throw err;
+      await distube.play(voiceChannel, `search:${queryOrUrl}`, { member, textChannel });
+      return;
     }
+    throw err;
   }
 }

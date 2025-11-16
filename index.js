@@ -1,8 +1,9 @@
-import 'dotenv/config';
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import dmProtection from './src/dmProtection.js';
-import { sanitizeForOutput } from './src/util/sanitizeMentions.js';
-import { setClient, distube } from './music.js';
+import { Client, GatewayIntentBits, Partials } from "discord.js";
+import dmProtection from "./src/dmProtection.js";
+import { sanitizeForOutput } from "./src/util/sanitizeMentions.js";
+import { setClient, distube } from "./music.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const client = new Client({
   intents: [
@@ -10,65 +11,65 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildVoiceStates
   ],
-  partials: [Partials.Channel, Partials.Message, Partials.GuildMember, Partials.User]
+  partials: [
+    Partials.Channel,
+    Partials.Message,
+    Partials.GuildMember,
+    Partials.User
+  ]
 });
 
-setClient(client); // connect distube client reference
+setClient(client);
 
-// Example command/event loader placeholder - keep your existing loader if present
-// loadCommands();
-// loadEvents();
-
-client.on('messageCreate', async (message) => {
+client.on("messageCreate", async (message) => {
   try {
     if (!message) return;
-    if (message.author?.bot) return; // ignore bot messages
+    if (message.author?.bot) return;
 
-    // DM handling
-    if (message.channel?.type === 1 /* DM */ || message.channel?.type === 'DM') {
+    if (message.channel?.type === 1 || message.channel?.type === "DM") {
       const res = dmProtection.recordDm(message.author.id);
-      if (res.blocked) {
-        if (res.newlyBlocked) {
-          const modChan = client.channels.cache.find(c => c.name === 'bot-logs' && c.isTextBased());
-          if (modChan) {
-            modChan.send({
-              content: `User <@${message.author.id}> auto-blocked for DM spam.`,
-              allowedMentions: { parse: [] }
-            }).catch(() => {});
-          }
-        }
-        return; // ignore blocked user
-      }
-
-      const reply = sanitizeForOutput('Cảm ơn đã nhắn. Hỗ trợ sẽ trả lời sớm.');
-      return message.channel.send({ content: reply, allowedMentions: { parse: [] } });
+      if (res.blocked) return;
     }
 
-    // If user is blocked globally, ignore messages (applies to guild messages too)
-    if (dmProtection.isBlocked(message.author.id)) return;
+    const clean = sanitizeForOutput(message.content);
 
-    // Continue existing command handling logic here (do not remove)
-  } catch (err) {
-    console.error('messageCreate error:', err);
-  }
+    if (clean.startsWith("!play")) {
+      const vc = message.member?.voice?.channel;
+      if (!vc) return;
+      const q = clean.replace("!play", "").trim();
+      await distube.play(vc, q, { member: message.member, textChannel: message.channel });
+      return;
+    }
+
+    if (clean.startsWith("!stop")) {
+      await distube.stop(message);
+      return;
+    }
+
+    if (clean.startsWith("!skip")) {
+      await distube.skip(message);
+      return;
+    }
+
+  } catch {}
 });
 
-client.on('interactionCreate', async (interaction) => {
+client.on("interactionCreate", async (i) => {
   try {
-    if (!interaction) return;
-    const userId = interaction.user?.id;
-    if (dmProtection.isBlocked(userId)) return;
+    if (!i) return;
 
-    // existing slash/button/select handling here
-  } catch (err) {
-    console.error('interactionCreate error:', err);
-  }
+    if (i.isChatInputCommand()) {
+      if (i.commandName === "play") {
+        const vc = i.member?.voice?.channel;
+        if (!vc) return;
+        const q = i.options.getString("query");
+        await distube.play(vc, q, { member: i.member, textChannel: i.channel });
+        await i.reply("Playing.");
+      }
+    }
+  } catch {}
 });
 
-client.once('ready', () => {
-  console.log(`Logged in as ${client.user?.tag}`);
-});
-
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
