@@ -31,10 +31,88 @@ jobs:
           node-version: 22.12.0
       - name: Install production deps
         run: npm install --production --ignore-scripts
-      - name: Start bot
+      - name: Start bot (up to 6h, auto-save, auto-respawn)
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           BOT_OWNER_IDS: ${{ secrets.BOT_OWNER_IDS }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: node index.js
+          REPO_TOKEN=${{ secrets.REPO_TOKEN }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+        run: |
+          set +e
+          START_TS=$(date +%s)
+          MAX_SECONDS=$((6 * 60 * 60))
+          SAFETY_SECONDS=20
+          RUNTIME_LIMIT=$((MAX_SECONDS - SAFETY_SECONDS))
+          MIN_TRIGGER=$(( (11 * 60 * 60) / 2 )) # 5.5 hours = 19800s
+          echo "Bot will run for up to ${RUNTIME_LIMIT}s (~6h minus safety ${SAFETY_SECONDS}s)."
+          
+          while true; do
+            NOW=$(date +%s)
+            ELAPSED=$((NOW - START_TS))
+            REMAIN=$((RUNTIME_LIMIT - ELAPSED))
+            if [ $REMAIN -le 0 ]; then
+              echo "Safety window reached; preparing to save data."
+              break
+            fi
+            
+            echo "Launching bot for up to ${REMAIN}s (elapsed ${ELAPSED}s)..."
+            timeout ${REMAIN}s node index.js
+            EXIT_CODE=$?
+            NOW=$(date +%s)
+            ELAPSED=$((NOW - START_TS))
+            
+            if [ $EXIT_CODE -eq 124 ]; then
+              echo "Bot hit safety timeout (elapsed ${ELAPSED}s)."
+              break
+            fi
+            
+            echo "Bot exited with code ${EXIT_CODE} after ${ELAPSED}s total runtime. Restarting in 5 seconds..."
+            sleep 5
+          done
+          
+          echo "Collecting JSON data files for commit..."
+          mapfile -t DATA_FILES < <(find . -type f -name '*.json' \
+            ! -path './node_modules/*' \
+            ! -path './.git/*' \
+            ! -name 'package.json' \
+            ! -name 'package-lock.json')
+          
+          COMMIT_SUCCESS=0
+          if [ ${#DATA_FILES[@]} -eq 0 ]; then
+            echo "No JSON data files found."
+          else
+            for file in "${DATA_FILES[@]}"; do
+              git add "$file"
+            done
+            
+            if git diff --cached --quiet; then
+              echo "No changes in JSON data files to commit."
+            else
+              if [ -z "${REPO_TOKEN}" ]; then
+                echo "REPO_TOKEN not provided; cannot push data."
+              else
+              git config user.name "yukkisensei"
+              git config user.email "nht3m7trator@icloud.com"
+              git commit -m "chore: auto-save data"
+              git push "https://x-access-token:${REPO_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
+              COMMIT_SUCCESS=1
+              fi
+            fi
+          fi
+          
+          NOW=$(date +%s)
+          ELAPSED=$((NOW - START_TS))
+          echo "Total elapsed runtime: ${ELAPSED}s."
+          
+          if [ $COMMIT_SUCCESS -eq 1 ] && [ $ELAPSED -ge $MIN_TRIGGER ]; then
+            echo "Triggering next workflow run (elapsed ≥ 5.5h and data committed)."
+            curl -X POST \
+              -H "Authorization: token ${REPO_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/bot.yml/dispatches" \
+              -d '{"ref":"main"}'
+          else
+            echo "Skipping workflow dispatch (commit_success=${COMMIT_SUCCESS}, elapsed=${ELAPSED}s)."
+          fi

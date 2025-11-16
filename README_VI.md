@@ -330,9 +330,10 @@ Tự do sử dụng, chỉnh sửa và phân phối. Không yêu cầu ghi công
 
 ## 🔧 GitHub Actions Workflow
 
-1. Thêm các secrets `DISCORD_BOT_TOKEN`, `NVIDIA_API_KEY`, `BOT_OWNER_IDS` và (nếu cần) `DISCORD_WEBHOOK_URL` tại **Settings → Secrets and variables → Actions**.
+1. Thêm các secrets `DISCORD_BOT_TOKEN`, `NVIDIA_API_KEY`, `BOT_OWNER_IDS`, `REPO_TOKEN` (PAT có quyền repo/workflow) và (nếu cần) `DISCORD_WEBHOOK_URL` tại **Settings → Secrets and variables → Actions**.
 2. Mỗi lần push lên `main`, workflow `doro-bot` sẽ tự chạy bước lint (`npm run lint`) trên Node.js 22.12.0 để đảm bảo mọi file `.js` hợp lệ.
 3. Để chạy bot trực tiếp từ GitHub, mở tab **Actions**, chọn workflow `doro-bot` rồi bấm **Run workflow**. Job `run-bot` sẽ cài đặt dependency production và chạy `node index.js` trên Node.js 22.12.0 (các lệnh nhạc vẫn cần máy hỗ trợ voice, runner chỉ dùng cho tính năng text).
+4. Khi chạy `run-bot`, workflow sẽ tự động restart bot nếu bị crash, chạy trong ~6 giờ (dừng sớm 20 giây), commit các file dữ liệu `.json`, và nếu đã qua 5,5 giờ kèm commit thành công thì sẽ tự kích hoạt workflow tiếp theo để phiên mới nối tiếp ngay.
 - Chạy với Node.js 22.12.0 cho hiệu suất tối ưu
 - Tự động cài đặt FFmpeg cho phương tiện
 - Theo dõi và quản lý trạng thái qua GitHub
