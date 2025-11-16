@@ -1,10 +1,21 @@
 import DistubeModule from "distube";
 import SoundcloudModule from "@distube/soundcloud";
 import ffmpegStatic from "ffmpeg-static";
+import path from "path";
 import { sanitizeForOutput } from "../src/util/sanitizeMentions.js";
 
-if (ffmpegStatic && !process.env.FFMPEG_PATH) {
-  process.env.FFMPEG_PATH = ffmpegStatic;
+const resolvedFfmpeg = ffmpegStatic || "ffmpeg";
+if (resolvedFfmpeg) {
+  process.env.FFMPEG_PATH = resolvedFfmpeg;
+  try {
+    const binDir = path.dirname(resolvedFfmpeg);
+    const currentPath = process.env.PATH || "";
+    if (!currentPath.split(path.delimiter).includes(binDir)) {
+      process.env.PATH = `${binDir}${path.delimiter}${currentPath}`;
+    }
+  } catch (err) {
+    console.warn("Failed to extend PATH with ffmpeg directory:", err);
+  }
 }
 
 const DisTubeClass = DistubeModule?.default ?? DistubeModule?.DisTube ?? DistubeModule;
@@ -24,7 +35,10 @@ export function setClient(client) {
     emitNewSongOnly: true,
     searchSongs: 1,
     nsfw: false,
-    plugins: [new SoundCloudPluginClass()]
+    plugins: [new SoundCloudPluginClass()],
+    ffmpeg: {
+      path: resolvedFfmpeg
+    }
   });
 
   distube.on("playSong", (queue, song) => {
