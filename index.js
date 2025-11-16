@@ -18,10 +18,16 @@ import fetch from 'node-fetch';
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || '';
 const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
+const HONKAI_IMAGE_URL = 'https://uploadstatic-sea.mihoyo.com/hkrpg/official/2023/05/26/0bbd10b191ed257a7b82d49f6839261c_2848477226371273738.png';
 const HONKAI_ACTIVITY = {
   name: 'Honkai: Star Rail',
-  type: ActivityType.Streaming,
-  url: 'https://youtu.be/dQw4w9WgXcQ?si=4BAoxjnmCSEm50NS'
+  type: ActivityType.Playing,
+  details: 'Trailblazing across the galaxy',
+  state: 'Watch trailer: youtu.be/dQw4w9WgXcQ',
+  assets: {
+    largeImage: HONKAI_IMAGE_URL,
+    largeText: 'Honkai: Star Rail'
+  }
 };
 const OWNER_IDS = (process.env.BOT_OWNER_IDS || '')
   .split(',')
@@ -86,10 +92,14 @@ client.once('clientReady', async () => {
   try {
     const msg = `Bot ready: ${client.user?.tag || 'unknown'}`;
     console.log(msg);
-    client.user?.setPresence({
-      activities: [HONKAI_ACTIVITY],
-      status: 'online'
-    }).catch((err) => console.error('presence error', err));
+    try {
+      client.user?.setPresence({
+        activities: [HONKAI_ACTIVITY],
+        status: 'online'
+      });
+    } catch (presenceErr) {
+      console.error('presence error', presenceErr);
+    }
     await sendWebhook(msg);
   } catch (e) {
     console.error(e);
