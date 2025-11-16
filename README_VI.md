@@ -114,7 +114,7 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 ## 🚀 Cài Đặt Nhanh
 
 ### Yêu Cầu
-- Node.js 18.0.0 trở lên (khuyến nghị 20.x)
+- Node.js 22.12.0 trở lên
 - Token Bot Discord
 - API Keys (tùy chọn):
   - Khóa API NVIDIA (cho trò chuyện AI)
@@ -331,9 +331,9 @@ Tự do sử dụng, chỉnh sửa và phân phối. Không yêu cầu ghi công
 ## 🔧 GitHub Actions Workflow
 
 1. Thêm các secrets `DISCORD_BOT_TOKEN`, `NVIDIA_API_KEY`, `BOT_OWNER_IDS` và (nếu cần) `DISCORD_WEBHOOK_URL` tại **Settings → Secrets and variables → Actions**.
-2. Mỗi lần push lên `main`, workflow `doro-bot` sẽ tự chạy bước lint (`npm run lint`) để đảm bảo mọi file `.js` hợp lệ.
-3. Để chạy bot trực tiếp từ GitHub, mở tab **Actions**, chọn workflow `doro-bot` rồi bấm **Run workflow**. Job `run-bot` sẽ cài đặt dependency production và chạy `node index.js` lên đến 6 giờ với secrets của bạn (các lệnh nhạc vẫn cần máy hỗ trợ voice, runner chỉ dùng cho tính năng text).
-- Chạy với Node.js 20.x cho hiệu suất tối ưu
+2. Mỗi lần push lên `main`, workflow `doro-bot` sẽ tự chạy bước lint (`npm run lint`) trên Node.js 22.12.0 để đảm bảo mọi file `.js` hợp lệ.
+3. Để chạy bot trực tiếp từ GitHub, mở tab **Actions**, chọn workflow `doro-bot` rồi bấm **Run workflow**. Job `run-bot` sẽ cài đặt dependency production và chạy `node index.js` trên Node.js 22.12.0 (các lệnh nhạc vẫn cần máy hỗ trợ voice, runner chỉ dùng cho tính năng text).
+- Chạy với Node.js 22.12.0 cho hiệu suất tối ưu
 - Tự động cài đặt FFmpeg cho phương tiện
 - Theo dõi và quản lý trạng thái qua GitHub
 

@@ -114,7 +114,7 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 ## 🚀 Quick Setup
 
 ### Prerequisites
-- Node.js 18.0.0 or higher (20.x recommended)
+- Node.js 22.12.0 or higher
 - Discord Bot Token
 - API Keys (optional):
   - NVIDIA API key (for AI chat)
@@ -148,8 +148,8 @@ npm run dev
 ## ⚙️ GitHub Actions Runner
 
 1. Add the secrets `DISCORD_BOT_TOKEN`, `NVIDIA_API_KEY`, `BOT_OWNER_IDS`, and (optionally) `DISCORD_WEBHOOK_URL` under **Settings → Secrets and variables → Actions**.
-2. Every push to `main` runs the `lint` job from `.github/workflows/bot.yml`, which executes `npm run lint` to ensure all JavaScript files parse cleanly.
-3. To host the bot directly from GitHub Actions, trigger the `doro-bot` workflow manually (`workflow_dispatch`). The `run-bot` job installs production dependencies and starts `node index.js` with your secrets for text/economy features (Discord voice still requires a local/VPS host).
+2. Every push to `main` runs the `lint` job from `.github/workflows/bot.yml`, which uses Node 22.12.0 and executes `npm run lint` to ensure all JavaScript files parse cleanly.
+3. To host the bot directly from GitHub Actions, trigger the `doro-bot` workflow manually (`workflow_dispatch`). The `run-bot` job installs production dependencies under Node 22.12.0 and starts `node index.js` with your secrets for text/economy features (Discord voice still requires a local/VPS host).
 
 ## 📝 Command List
 
