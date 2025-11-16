@@ -23,6 +23,10 @@ export const economyCommands = {
             const coinsText = languageSystem.t(guildId, 'coins');
             const daysText = languageSystem.t(guildId, 'days');
             
+            const isInfinity = economy.isInfinity(userId);
+            const streakValue = isInfinity ? '∞' : `${user.dailyStreak} ${daysText}`;
+            const xpValue = isInfinity ? '∞' : `${user.xp}/${economy.getXPForLevel(user.level)}`;
+
             const embed = new EmbedBuilder()
                 .setColor('#FFD700')
                 .setTitle(languageSystem.t(guildId, 'balance_title', { user: target.username }))
@@ -32,13 +36,13 @@ export const economyCommands = {
                     { name: languageSystem.t(guildId, 'balance_total'), value: `${totalStr} ${coinsText}`, inline: true }
                 )
                 .addFields(
-                    { name: languageSystem.t(guildId, 'balance_level'), value: `${user.level}`, inline: true },
-                    { name: languageSystem.t(guildId, 'balance_xp'), value: `${user.xp}/${economy.getXPForLevel(user.level)}`, inline: true },
-                    { name: languageSystem.t(guildId, 'balance_streak'), value: `${user.dailyStreak} ${daysText}`, inline: true }
+                    { name: languageSystem.t(guildId, 'balance_level'), value: isInfinity ? '∞' : `${user.level}`, inline: true },
+                    { name: languageSystem.t(guildId, 'balance_xp'), value: xpValue, inline: true },
+                    { name: languageSystem.t(guildId, 'balance_streak'), value: streakValue, inline: true }
                 )
                 .setTimestamp();
             
-            if (economy.isInfinity(userId)) {
+            if (isInfinity) {
                 embed.setFooter({ text: languageSystem.t(guildId, 'balance_infinity') });
             }
             

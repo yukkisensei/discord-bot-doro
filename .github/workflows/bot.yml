@@ -45,7 +45,7 @@ jobs:
           MAX_SECONDS=$((6 * 60 * 60))
           SAFETY_SECONDS=20
           RUNTIME_LIMIT=$((MAX_SECONDS - SAFETY_SECONDS))
-          MIN_TRIGGER=$(( (11 * 60 * 60) / 2 )) # 5.5 hours = 19800s
+          DISPATCH_THRESHOLD=$((6 * 60 * 60 - 20)) # 6h - 20s
           echo "Bot will run for up to ${RUNTIME_LIMIT}s (~6h minus safety ${SAFETY_SECONDS}s)."
           
           while true; do
@@ -106,13 +106,13 @@ jobs:
           ELAPSED=$((NOW - START_TS))
           echo "Total elapsed runtime: ${ELAPSED}s."
           
-          if [ $COMMIT_SUCCESS -eq 1 ] && [ $ELAPSED -ge $MIN_TRIGGER ]; then
-            echo "Triggering next workflow run (elapsed ≥ 5.5h and data committed)."
+          if [ $ELAPSED -ge $DISPATCH_THRESHOLD ]; then
+            echo "Triggering next workflow run (elapsed ≥ ${DISPATCH_THRESHOLD}s)."
             curl -X POST \
               -H "Authorization: token ${REPO_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/bot.yml/dispatches" \
               -d '{"ref":"main"}'
           else
-            echo "Skipping workflow dispatch (commit_success=${COMMIT_SUCCESS}, elapsed=${ELAPSED}s)."
+            echo "Skipping workflow dispatch (elapsed=${ELAPSED}s)."
           fi

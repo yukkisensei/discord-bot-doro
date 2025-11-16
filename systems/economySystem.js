@@ -32,6 +32,7 @@ export class EconomySystem {
         user.baseDaily = Math.max(user.baseDaily || 0, 999999);
         user.xp = Number.MAX_SAFE_INTEGER;
         user.level = Number.MAX_SAFE_INTEGER;
+        user.dailyStreak = Number.MAX_SAFE_INTEGER;
     }
 
     getUser(userId) {
@@ -76,6 +77,7 @@ export class EconomySystem {
         if (user.infinity) {
             this.infinityUsers.add(userId);
             this.applyInfinityStats(user);
+            updated = true;
         }
 
         if (updated) this.save();

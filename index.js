@@ -18,12 +18,11 @@ import fetch from 'node-fetch';
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || '';
 const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
-const HONKAI_IMAGE_URL = 'https://uploadstatic-sea.mihoyo.com/hkrpg/official/2023/05/26/0bbd10b191ed257a7b82d49f6839261c_2848477226371273738.png';
+const HONKAI_IMAGE_URL = 'https://toppng.com/uploads/preview/official-logo-of-the-honkai-star-rail-game-11728656973tfuqkczxck.png';
 const HONKAI_ACTIVITY = {
   name: 'Honkai: Star Rail',
   type: ActivityType.Playing,
   details: 'Trailblazing across the galaxy',
-  state: 'Watch trailer: youtu.be/dQw4w9WgXcQ',
   assets: {
     largeImage: HONKAI_IMAGE_URL,
     largeText: 'Honkai: Star Rail'
