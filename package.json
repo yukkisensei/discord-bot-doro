@@ -1,0 +1,38 @@
+{
+  "name": "discord-bot-doro",
+  "version": "3.10.0",
+  "description": "Doro Discord Bot V3.10 - Multi-purpose bot with music, economy, casino, AI chat, multilingual support",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "music",
+    "economy",
+    "ai"
+  ],
+  "author": "yukkisensei",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "@discordjs/voice": "^1.11.0",
+    "@discordjs/opus": "^0.11.0",
+    "dotenv": "^16.4.5",
+    "axios": "^1.7.7",
+    "ffmpeg-static": "^5.2.0",
+    "libsodium-wrappers": "^0.7.15",
+    "distube": "^4.2.0",
+    "@distube/soundcloud": "^1.3.3",
+    "yt-search": "^2.10.1"
+  },
+  "optionalDependencies": {
+    "canvas": "^2.11.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
