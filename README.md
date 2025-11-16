@@ -6,8 +6,6 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 
 **Version:** V4.3 | **Language:** English | **Status:** ✅ Active
 
-[![Honkai: Star Rail Banner](https://toppng.com/uploads/preview/official-logo-of-the-honkai-star-rail-game-11728656973tfuqkczxck.png)](#)
-
 ## ✨ Key Features
 
 ### 🎵 Music System

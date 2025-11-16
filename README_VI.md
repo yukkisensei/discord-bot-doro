@@ -6,8 +6,6 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 
 **Phiên Bản:** V4.3 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
 
-[![Honkai: Star Rail Banner](https://toppng.com/uploads/preview/official-logo-of-the-honkai-star-rail-game-11728656973tfuqkczxck.png)](#)
-
 ## ✨ Tính Năng Chính
 
 ### 🎵 Hệ Thống Nhạc
