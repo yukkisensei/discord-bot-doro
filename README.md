@@ -1,10 +1,10 @@
-# Doro Discord Bot 🌸 V4.1 (Node.js Edition)
+# Doro Discord Bot 🌸 V4.2 (Node.js Edition)
 
 An adorable multi-purpose Discord bot with music, economy, casino games, marriage system, AI chat, and word chain features! Now powered by Node.js with multilingual support!
 
 > 🇻🇳 **[Tiếng Việt](README_VI.md)** | 🇺🇸 **English** (current)
 
-**Version:** V4.1 | **Language:** English | **Status:** ✅ Active
+**Version:** V4.2 | **Language:** English | **Status:** ✅ Active
 
 ## ✨ Key Features
 
@@ -77,12 +77,12 @@ An adorable multi-purpose Discord bot with music, economy, casino games, marriag
 - Optimized message handling
 - Automatic memory management
 
-## 🆕 What's New in V4.1
+## 🆕 What's New in V4.2
 
-- 🔕 **Mention Guard** - The bot now ignores messages containing `@everyone` or `@here`, and every outgoing message (including `!say`) is sanitized so it never relays mass pings.
-- 🎧 **Music Bootstrap Fix** - DisTube now initializes with the live Discord client so music commands work immediately on any host that supports voice (local PC, VPS, etc.).
-- ⚙️ **GitHub Actions Runner** - Added `.github/workflows/bot.yml` to lint on each push and optionally launch the bot from Actions with repository secrets.
-- 🚀 **Latency Tune-Ups** - Leaner message parsing plus a new `npm run lint` syntax sweep keep response and API latency as low as possible.
+- 🤖 **System Boot Fix** - All subsystems (economy, shop, AFK, language, etc.) load before login, so every prefix command (`!ping`, `!daily`, …) responds consistently after deployments.
+- 📦 **AI Dependency Patch** - Bundled `axios` directly with the bot, preventing `ERR_MODULE_NOT_FOUND` when the AI system spins up on GitHub Actions.
+- 🎵 **Music Stability** - Distube is now instantiated safely in ESM environments and its announcements route through a single listener, eliminating MaxListeners warnings.
+- 🔁 **Workflow Guardrails** - The auto-runner still sanitizes mass mentions but now chains 6‑hour sessions with data commits without interrupting command handling.
 
 ## Previous Updates (V4.1)
 

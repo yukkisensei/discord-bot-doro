@@ -12,7 +12,7 @@ import { sanitizeForOutput } from '../src/util/sanitizeMentions.js';
 const helpCategories = {
     en: {
         main: {
-            title: '🌸 Doro Bot V4.1 - Help',
+            title: '🌸 Doro Bot V4.2 - Help',
             description: 'Choose a category to view commands:',
             categories: {
                 economy: '💰 Economy - Balance, daily rewards, banking',
@@ -23,7 +23,7 @@ const helpCategories = {
                 ai: '🤖 AI - Chat with Doro',
                 utility: '⚙️ Utility - Bot tools and settings'
             },
-            footer: 'Use {prefix}help <category> for details | V4.1'
+            footer: 'Use {prefix}help <category> for details | V4.2'
         },
         economy: {
             title: '💰 Economy Commands',
@@ -98,7 +98,7 @@ const helpCategories = {
     },
     vi: {
         main: {
-            title: '🌸 Doro Bot V4.1 - Trợ Giúp',
+            title: '🌸 Doro Bot V4.2 - Trợ Giúp',
             description: 'Chọn danh mục để xem lệnh:',
             categories: {
                 economy: '💰 Kinh Tế - Số dư, thưởng hàng ngày, ngân hàng',
@@ -109,7 +109,7 @@ const helpCategories = {
                 ai: '🤖 AI - Trò chuyện với Doro',
                 utility: '⚙️ Tiện Ích - Công cụ và cài đặt'
             },
-            footer: 'Dùng {prefix}help <danh mục> để xem chi tiết | V4.1'
+            footer: 'Dùng {prefix}help <danh mục> để xem chi tiết | V4.2'
         },
         economy: {
             title: '💰 Lệnh Kinh Tế',
@@ -229,7 +229,7 @@ export const utilityCommands = {
                 });
             }
             
-            embed.setFooter({ text: `Use ${prefix}help to see all categories | V4.1` })
+            embed.setFooter({ text: `Use ${prefix}help to see all categories | V4.2` })
                 .setTimestamp();
             
             await message.reply({ embeds: [embed] });

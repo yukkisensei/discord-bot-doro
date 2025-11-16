@@ -1,10 +1,10 @@
-# Doro Discord Bot 🌸 V4.1 (Phiên Bản Node.js)
+# Doro Discord Bot 🌸 V4.2 (Phiên Bản Node.js)
 
 Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế, casino, kết hôn, trò chuyện AI và nối từ! Hiện được vận hành bởi Node.js với hỗ trợ đa ngôn ngữ!
 
 > 🇻🇳 **Tiếng Việt** (hiện tại) | 🇺🇸 **[English](README.md)**
 
-**Phiên Bản:** V4.1 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
+**Phiên Bản:** V4.2 | **Ngôn Ngữ:** Tiếng Việt | **Trạng Thái:** ✅ Hoạt Động
 
 ## ✨ Tính Năng Chính
 
@@ -77,12 +77,12 @@ Bot Discord đa chức năng dễ thương với hệ thống nhạc, kinh tế,
 - Xử lý tin nhắn được tối ưu
 - Quản lý bộ nhớ tự động
 
-## 🆕 Có Gì Mới Trong V4.1
+## 🆕 Có Gì Mới Trong V4.2
 
-- 🔕 **Chặn Ping** - Bot bỏ qua tin nhắn chứa `@everyone` / `@here` và toàn bộ output (kể cả `!say`) được làm sạch nên không ping cả server.
-- 🎧 **Sửa Khởi Tạo Nhạc** - DisTube được khởi tạo cùng Discord client nên nhạc chạy ổn định trên các máy hỗ trợ voice (máy thật/VPS).
-- ⚙️ **GitHub Actions Runner** - Thêm `.github/workflows/bot.yml` để lint mỗi lần push và có thể chạy bot trực tiếp từ Actions bằng secrets của repo.
-- 🚀 **Tối Ưu Độ Trễ** - Bộ phân tích tin nhắn gọn hơn cùng lệnh `npm run lint` mới giúp giữ latency và API ping ở mức thấp nhất.
+- 🤖 **Sửa Khởi Động Hệ Thống** - Tất cả hệ thống (kinh tế, shop, AFK, ngôn ngữ, AI, …) được tải trước khi đăng nhập nên lệnh prefix như `!ping`, `!daily` chạy lại bình thường sau mỗi lần deploy.
+- 📦 **Thêm Axios Cho AI** - Đã cài sẵn `axios` trong bot để AI không còn lỗi `ERR_MODULE_NOT_FOUND` khi chạy trên GitHub Actions.
+- 🎵 **Ổn Định Nhạc** - Distube tương thích hoàn toàn với ESM, chỉ còn một listener thông báo nên không còn cảnh báo MaxListeners.
+- 🔁 **Workflow Liên Tục** - Runner 6 giờ vẫn commit dữ liệu và chuỗi phiên tự động nhưng không còn ảnh hưởng đến hệ thống lệnh.
 
 ## Cập Nhật Trước Đó (V4.1)
 
