@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
+import { Client, GatewayIntentBits, Partials, ActivityType } from 'discord.js';
 import dmProtection from './src/dmProtection.js';
 import { sanitizeForOutput } from './src/util/sanitizeMentions.js';
 import { setClient } from './commands/music.js';
@@ -18,6 +18,11 @@ import fetch from 'node-fetch';
 
 const WEBHOOK = process.env.DISCORD_WEBHOOK_URL || '';
 const MASS_MENTION_REGEX = /@(?:everyone|here)/i;
+const HONKAI_ACTIVITY = {
+  name: 'Honkai: Star Rail',
+  type: ActivityType.Streaming,
+  url: 'https://youtu.be/dQw4w9WgXcQ?si=4BAoxjnmCSEm50NS'
+};
 const OWNER_IDS = (process.env.BOT_OWNER_IDS || '')
   .split(',')
   .map((id) => id.trim())
@@ -81,6 +86,10 @@ client.once('clientReady', async () => {
   try {
     const msg = `Bot ready: ${client.user?.tag || 'unknown'}`;
     console.log(msg);
+    client.user?.setPresence({
+      activities: [HONKAI_ACTIVITY],
+      status: 'online'
+    }).catch((err) => console.error('presence error', err));
     await sendWebhook(msg);
   } catch (e) {
     console.error(e);

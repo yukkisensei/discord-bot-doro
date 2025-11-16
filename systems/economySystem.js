@@ -26,6 +26,14 @@ export class EconomySystem {
         await FileSystem.saveJSON(ECONOMY_FILE, this.data);
     }
 
+    applyInfinityStats(user) {
+        user.balance = Number.MAX_SAFE_INTEGER;
+        user.bank = Number.MAX_SAFE_INTEGER;
+        user.baseDaily = Math.max(user.baseDaily || 0, 999999);
+        user.xp = Number.MAX_SAFE_INTEGER;
+        user.level = Number.MAX_SAFE_INTEGER;
+    }
+
     getUser(userId) {
         const isOwner = this.ownerIds.includes(userId);
 
@@ -67,6 +75,7 @@ export class EconomySystem {
         // Track infinity users
         if (user.infinity) {
             this.infinityUsers.add(userId);
+            this.applyInfinityStats(user);
         }
 
         if (updated) this.save();
@@ -85,11 +94,7 @@ export class EconomySystem {
 
         if (enabled) {
             this.infinityUsers.add(userId);
-            user.balance = Number.MAX_SAFE_INTEGER;
-            user.bank = Number.MAX_SAFE_INTEGER;
-            user.baseDaily = Math.max(user.baseDaily || 0, 999999);
-            user.xp = Number.MAX_SAFE_INTEGER;
-            user.level = Number.MAX_SAFE_INTEGER;
+            this.applyInfinityStats(user);
         } else {
             this.infinityUsers.delete(userId);
         }
