@@ -166,26 +166,40 @@ client.on('messageCreate', async (message) => {
       if (!q) {
         return message.channel.send({ content: 'Please provide a song name or link.', allowedMentions: { parse: [] } }).catch(()=>{});
       }
-      await music.play(vc, q, { member: message.member, textChannel: message.channel });
+
+      const statusMsg = await message.reply('🔎 Finding your track...');
+      try {
+        await music.play(vc, q, { member: message.member, textChannel: message.channel });
+        await statusMsg.edit({ content: `▶️ Queued: ${sanitizeForOutput(q).slice(0, 150)}`, allowedMentions: { parse: [] } }).catch(()=>{});
+      } catch (err) {
+        console.error('play command error', err);
+        await statusMsg.edit({ content: '❌ Failed to play that track. Please try a different link/keyword.', allowedMentions: { parse: [] } }).catch(()=>{});
+      }
       return;
     }
 
     if (normalized.startsWith('!stop')) {
+      const statusMsg = await message.reply('⏹️ Stopping playback...');
       try {
         await music.stop(message);
+        await statusMsg.edit('⏹️ Playback stopped and queue cleared.');
         return;
       } catch (e) {
         console.error(e);
+        await statusMsg.edit('❌ Unable to stop playback right now.');
         return;
       }
     }
 
     if (normalized.startsWith('!skip')) {
+      const statusMsg = await message.reply('⏭️ Skipping current track...');
       try {
         await music.skip(message);
+        await statusMsg.edit('⏭️ Skipped to the next track.');
         return;
       } catch (e) {
         console.error(e);
+        await statusMsg.edit('❌ Unable to skip right now.');
         return;
       }
     }

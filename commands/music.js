@@ -1,6 +1,11 @@
 import DistubeModule from "distube";
 import SoundcloudModule from "@distube/soundcloud";
+import ffmpegStatic from "ffmpeg-static";
 import { sanitizeForOutput } from "../src/util/sanitizeMentions.js";
+
+if (ffmpegStatic && !process.env.FFMPEG_PATH) {
+  process.env.FFMPEG_PATH = ffmpegStatic;
+}
 
 const DisTubeClass = DistubeModule?.default ?? DistubeModule?.DisTube ?? DistubeModule;
 const SoundCloudPluginClass = SoundcloudModule?.default ?? SoundcloudModule?.SoundCloudPlugin ?? SoundcloudModule;
